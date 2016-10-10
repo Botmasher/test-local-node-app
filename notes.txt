@@ -1,0 +1,8 @@
+Connect and serve with Node.js:
+https://nodejs.org/en/about/
+
+Run my example:
+node nodeserver.js
+
+Connect and query a db with Node.js:
+http://stackoverflow.com/questions/9205496/how-to-make-connection-to-postgres-via-node-js
