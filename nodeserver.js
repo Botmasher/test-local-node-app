@@ -1,9 +1,33 @@
-// server run from terminal: node nodeserver.js
-const http = require('http');
-const url = require('url');
-
-// import .js files
+// import our js functions
 var testmodule = require('./testmodule');
+
+// routing and templating
+var expressApp = require('express');
+var app = expressApp();
+
+app.get('/', function(req, res) {
+	res.setHeader('Content-Type', 'text/plain');
+	res.end('This is the root page.');
+})
+.get('/subdir/:variableName/', function(req,res){
+	res.setHeader('Content-Type', 'text/plain');
+	res.end('Your variable is ' + req.params.variableName);
+})
+.use(function(req,res,next){
+});
+
+app.listen(8080);
+
+
+/*
+https://openclassrooms.com/courses/ultra-fast-applications-using-node-js/node-js-modules-and-npm
+*/
+
+/*
+
+// simple server - run from terminal: node nodeserver.js
+var http = require('http');
+var url = require('url');
 
 const host = '127.0.0.1';
 const port = 8080;
@@ -39,6 +63,4 @@ server.on ('close', function() {
 	console.log ('Bye for now!');
 });
 
-/*
-https://openclassrooms.com/courses/ultra-fast-applications-using-node-js/node-js-modules-and-npm
 */
