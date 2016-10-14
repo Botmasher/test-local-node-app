@@ -7,7 +7,8 @@ var app = expressApp();
 
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
-	res.end('This is the root page.');
+	var txt = testmodule.init();
+	res.end(txt);
 })
 .get('/subdir/:variableName/', function(req,res){
 	res.setHeader('Content-Type', 'text/plain');
@@ -18,9 +19,12 @@ app.get('/', function(req, res) {
 
 app.listen(8080);
 
-
 /*
+
 https://openclassrooms.com/courses/ultra-fast-applications-using-node-js/node-js-modules-and-npm
+
+http://cwbuecheler.com/web/tutorials/2013/node-express-mongo/
+
 */
 
 /*
