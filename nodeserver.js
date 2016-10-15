@@ -5,10 +5,16 @@ var testmodule = require('./testmodule');
 var expressApp = require('express');
 var app = expressApp();
 
+app.set('views', './views');
+app.set('view engine', 'ejs');
+
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
 	var txt = testmodule.init();
 	res.end(txt);
+})
+.get('jessica', function(req,res){
+	res.render('jessica', { title: 'Jessica'});
 })
 .get('/subdir/:variableName/', function(req,res){
 	res.setHeader('Content-Type', 'text/plain');
