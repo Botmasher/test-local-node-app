@@ -13,7 +13,7 @@ app.get('/', function(req, res) {
 	var txt = testmodule.init();
 	res.end(txt);
 })
-.get('jessica', function(req,res){
+.get('/jessica', function(req,res){
 	res.render('jessica', { title: 'Jessica'});
 })
 .get('/subdir/:variableName/', function(req,res){

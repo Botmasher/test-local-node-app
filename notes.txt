@@ -6,3 +6,9 @@ node nodeserver.js
 
 Connect and query a db with Node.js:
 http://stackoverflow.com/questions/9205496/how-to-make-connection-to-postgres-via-node-js
+
+Start the app using supervisor for autoloading of code changes:
+npm start
+
+Start app with logging to the console:
+DEBUG=* npm start
