@@ -1,14 +1,40 @@
-Connect and serve with Node.js:
+// Node server
+
+Basic - connect and serve with Node.js:
 https://nodejs.org/en/about/
 
 Run my example:
 node nodeserver.js
 
+Run app using supervisor for autoloading of code changes:
+npm start
+
+Run app with logging to the console:
+DEBUG=* npm start
+
 Connect and query a db with Node.js:
 http://stackoverflow.com/questions/9205496/how-to-make-connection-to-postgres-via-node-js
 
-Start the app using supervisor for autoloading of code changes:
-npm start
+Use express:
+http://expressjs.com/en/starter/hello-world.html
+http://expressjs.com/en/starter/basic-routing.html
 
-Start app with logging to the console:
-DEBUG=* npm start
+
+// Postgres + Node
+
+Connect and query postgres db with node:
+http://stackoverflow.com/questions/9205496/how-to-make-connection-to-postgres-via-node-js
+http://stackoverflow.com/questions/21740560/node-server-cant-connect-to-postgres-db?noredirect=1&lq=1
+
+Tutorial:
+http://mherman.org/blog/2015/02/12/postgresql-and-nodejs/#.WAKS67wrIgo
+
+Use PSQL app to manage db:
+http://www.postgresguide.com/utilities/psql.html
+
+
+// MongoDB + Express
+
+Use mongodb and mongoose with Express:
+http://cwbuecheler.com/web/tutorials/2013/node-express-mongo/
+http://mongoosejs.com/docs/index.html
