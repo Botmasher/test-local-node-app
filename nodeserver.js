@@ -8,9 +8,31 @@ var app = expressApp();
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
+// postgres db connection
+const pg = require('pg');
+const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/orangutan';
+const client = new pg.Client(connectionString);
+client.connect();
+
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
 	var txt = testmodule.init();
+
+	/*
+	 * 	Test executing update and read queries	
+	 */
+	//execute query queue
+	var queue = 1000;
+	while (queue > 0) {
+    	client.query("INSERT INTO location(name) values('Happyland')");
+    	client.query("INSERT INTO location(name) values($1)", ['Sadland']);
+    	queue = queue-1;
+	}
+	var query = client.query("SELECT * FROM location");
+	query.on('row', function(row){ txt+=row; });
+	// end after last row emitted
+	query.on('end', function(){ client.end(); });
+
 	res.end(txt);
 })
 .get('/jessica', function(req,res){
