@@ -5,6 +5,12 @@ var testmodule = require('./testmodule');
 var expressApp = require('express');
 var app = expressApp();
 
+// postgres db connection
+var pg = require('pg');
+var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/orangutan';
+var db = new pg.Client(connectionString);
+db.connect();
+
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
@@ -19,6 +25,35 @@ app.get('/', function(req, res) {
 .get('/subdir/:variableName/', function(req,res){
 	res.setHeader('Content-Type', 'text/plain');
 	res.end('Your variable is ' + req.params.variableName);
+})
+.get('/read/', function(req,res){
+	/*
+	 * 	Test reading from db	
+	 */
+	var txt = 'Query not run.';
+	var query = db.query("SELECT * FROM location");
+	query.on('row', function(row){ console.log(row.name); });
+	// end after last row emitted
+	query.on('end', function(){ db.end(); });
+	res.end(txt);
+})
+.get('/write/', function(req,res){
+	/*
+	 * 	Test writing to db
+	 */
+	// execute query queue
+	var txt = 'Query not run.';
+	var queue = 1000;
+	while (queue > 0) {
+		db.query("INSERT INTO location(name) values('Happyland')");
+		queue = queue-1;
+		txt='';
+	}
+	var query = db.query("SELECT * FROM location");
+	query.on('row', function(row){ console.log(row.name); });
+	// end after last row emitted
+	query.on('end', function(){ db.end(); });
+	res.end(txt);
 })
 .use(function(req,res,next){
 });
