@@ -32,10 +32,17 @@ app.get('/', function(req, res) {
 	 */
 	var txt = 'Query not run.';
 	var query = db.query("SELECT * FROM location");
-	query.on('row', function(row){ console.log(row.name); });
+	query.on('row', function(row, result){
+		result.addRow(row);
+		txt = row.name;
+	});
 	// end after last row emitted
-	query.on('end', function(){ db.end(); });
-	res.end(txt);
+	query.on('end', function(result){
+		console.log(JSON.stringify(result.rows, null, "  "));
+		db.end();
+		res.render('jessica', { title: txt });
+	});
+	//res.end(txt);
 })
 .get('/write/', function(req,res){
 	/*
