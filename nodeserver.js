@@ -50,17 +50,24 @@ app.get('/', function(req, res) {
 	 */
 	// execute query queue
 	var txt = 'Query not run.';
-	var queue = 1000;
+	var queue = 1;
 	while (queue > 0) {
-		db.query("INSERT INTO location(name) values('Happyland')");
+		db.query("INSERT INTO location(name) values('Nothingtosee')");
 		queue = queue-1;
 		txt='';
 	}
 	var query = db.query("SELECT * FROM location");
-	query.on('row', function(row){ console.log(row.name); });
+	query.on('row', function(row) { console.log(row.name); });
 	// end after last row emitted
-	query.on('end', function(){ db.end(); });
+	query.on('end', function() { db.end(); });
 	res.end(txt);
+})
+.get('/clear-db/', function(req, res){
+	// CAREFUL - wipes the relation
+	var q = db.query("DELETE FROM location");
+	q.on('row', function(r) { console.log(r.name); });
+	q.on('end', function() { db.end(); });
+	res.end('Successfully wiped table.');
 })
 .use(function(req,res,next){
 });
