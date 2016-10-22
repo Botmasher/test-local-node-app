@@ -30,29 +30,30 @@ app.get('/', function(req, res) {
 	/*
 	 * 	Test reading from db	
 	 */
-	var txt = 'Query not run.';
+	var txt = null;
 	var query = db.query("SELECT * FROM location");
 	query.on('row', function(row, result){
+		if (txt === null) txt = "";
 		result.addRow(row);
-		txt = row.name;
+		txt = txt + "Location name: " + row.name + "\n";
 	});
 	// end after last row emitted
 	query.on('end', function(result){
 		console.log(JSON.stringify(result.rows, null, "  "));
 		db.end();
+		if (txt === null) txt = "No rows in the table.";
 		res.render('jessica', { title: txt });
 	});
-	//res.end(txt);
 })
-.get('/write/', function(req,res){
+.get('/write/:val/', function(req,res){
 	/*
 	 * 	Test writing to db
 	 */
 	// execute query queue
-	var txt = 'Query not run.';
+	var txt = 'Writing to database.';
 	var queue = 1;
 	while (queue > 0) {
-		db.query("INSERT INTO location(name) values('Nothingtosee')");
+		db.query("INSERT INTO location(name) values("+req.params.val+")");
 		queue = queue-1;
 		txt='';
 	}
@@ -62,12 +63,12 @@ app.get('/', function(req, res) {
 	query.on('end', function() { db.end(); });
 	res.end(txt);
 })
-.get('/clear-db/', function(req, res){
+.get('/wipe/', function(request, result){
 	// CAREFUL - wipes the relation
 	var q = db.query("DELETE FROM location");
 	q.on('row', function(r) { console.log(r.name); });
 	q.on('end', function() { db.end(); });
-	res.end('Successfully wiped table.');
+	result.end('Successfully wiped table.');
 })
 .use(function(req,res,next){
 });
