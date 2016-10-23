@@ -30,37 +30,43 @@ app.get('/', function(req, res) {
 	/*
 	 * 	Test reading from db	
 	 */
-	var txt = null;
+	var txt = "Names in db:\n";
 	var query = db.query("SELECT * FROM location");
-	query.on('row', function(row, result){
-		if (txt === null) txt = "";
+	query.on ('row', function (row, result) {
 		result.addRow(row);
-		txt = txt + "Location name: " + row.name + "\n";
+		console.log(row.name);
+		txt = txt + row.name + "\n";
 	});
 	// end after last row emitted
-	query.on('end', function(result){
-		console.log(JSON.stringify(result.rows, null, "  "));
+	query.on ('end', function (output) {
+		console.log(JSON.stringify(output.rows, null, "  "));
 		db.end();
 		if (txt === null) txt = "No rows in the table.";
-		res.render('jessica', { title: txt });
+		// 
+		res.render ('jessica', { title: txt });
 	});
 })
-.get('/write/:val/', function(req,res){
+.get('/write/:locationName/', function(request,res){
 	/*
 	 * 	Test writing to db
 	 */
+	// see that you can access url variable
+	console.log (locationName);
+
 	// execute query queue
 	var txt = 'Writing to database.';
-	var queue = 1;
-	while (queue > 0) {
-		db.query("INSERT INTO location(name) values("+req.params.val+")");
-		queue = queue-1;
-		txt='';
-	}
+
+	// // TODO interpolate locationName string var on this line
+	// db.query("INSERT INTO location(name) values('someplace')");
+	
+	// read table data to verify insertion
 	var query = db.query("SELECT * FROM location");
+	// cycle through all rows
 	query.on('row', function(row) { console.log(row.name); });
 	// end after last row emitted
 	query.on('end', function() { db.end(); });
+
+	// display text in browser
 	res.end(txt);
 })
 .get('/wipe/', function(request, result){
