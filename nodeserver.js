@@ -26,10 +26,8 @@ app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
 	res.end('Your variable is ' + req.params.variableName);
 })
-.get('/read/', function(req,res){
-	/*
-	 * 	Test reading from db	
-	 */
+.get('/locations/', function(req,res){
+	// read all from locations table
 	var txt = "Names in db:\n";
 	var query = db.query("SELECT * FROM location");
 	query.on ('row', function (row, result) {
@@ -45,6 +43,15 @@ app.get('/', function(req, res) {
 		// 
 		res.render ('jessica', { title: txt });
 	});
+})
+.get('/locations/:location/', function(req,res){
+	// read a single location
+	db.query("SELECT * FROM location WHERE name=$1::text",[req.params.location], function (error, result) {
+		if (error) throw error;
+		console.log (result.rows[0]);
+		db.end(function(error){ if (error) throw error; });
+	});
+	res.render ('jessica', { title: null });
 })
 .get('/write/:locationName/', function(request,res){
 	/*
