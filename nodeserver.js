@@ -27,31 +27,82 @@ app.get('/', function(req, res) {
 	res.end('Your variable is ' + req.params.variableName);
 })
 .get('/locations/', function(req,res){
-	// read all from locations table
-	var txt = "Names in db:\n";
-	var query = db.query("SELECT * FROM location");
-	query.on ('row', function (row, result) {
-		result.addRow(row);
-		console.log(row.name);
-		txt = txt + row.name + "\n";
+	var o = null;
+
+	// read all location names in locations table
+	db.query('SELECT * FROM location', function (error, output) {
+		if (error) throw error;
+
+		// end 
+		db.end(function(error) {
+			if (error) throw error;
+
+			// add all location names to the output string
+			if (o === null) o = '';
+			for (index in output.rows) {
+				o = o + output.rows[index].name;
+			};
+			db.end();
+
+			/*
+			 * 	Render here inside the db connection!
+			 * 	- Async loading means o(utput) string won't update
+			 *	  until now
+			 */
+			res.render ('jessica', { title: o });
+		});
 	});
-	// end after last row emitted
-	query.on ('end', function (output) {
-		console.log(JSON.stringify(output.rows, null, "  "));
-		db.end();
-		if (txt === null) txt = "No rows in the table.";
-		// 
-		res.render ('jessica', { title: txt });
+
+	//
+	// /* Example Query Events */
+	// 
+	// query = db.query('SELECT * FROM location');
+	// 
+	// // do while emitting rows
+	// query.on ('row', function (row, result) {
+	// //	result.addRow(row);
+	// //	o = o + row.name + '\n';
+	// });
+	//
+	// // end after last row emitted
+	// query.on ('end', function (error) {
+	// 	o = JSON.stringify(output.rows, null, "  ");
+	// 	if (error) throw error;
+	// 	db.end();
+	// 	if (o === null) o = 'No rows in the table.';
+	//	res.render ('jessica', { title: o });
+	// });
+})
+.get('/locations/JSON/', function(req, res){
+	res.setHeader('Content-Type', 'text/plain');
+	var o = null; 	// store output text for user
+
+	// query and callback
+	db.query('SELECT * FROM location', function (error, output) {
+
+		if (error) throw error;
+
+		// store json output when query finished
+		db.end(function(error) {
+			if (error) throw error;
+			o = JSON.stringify(output.rows, null, "  ");
+			db.end();
+
+			// display results
+			res.end(o);
+		});
 	});
 })
 .get('/locations/:location/', function(req,res){
+	o = 'output text';
+	q = 'SELECT * FROM location WHERE name=$1::text';
 	// read a single location
-	db.query("SELECT * FROM location WHERE name=$1::text",[req.params.location], function (error, result) {
-		if (error) throw error;
-		console.log (result.rows[0]);
-		db.end(function(error){ if (error) throw error; });
+	db.query(q, [req.params.location], function (error, result) {
+		if (error) throw error; 	// error while emanating rows
+		o = result.rows[0];			// store output
+		db.end(function(error){if (error) throw error;});	// error on close
 	});
-	res.render ('jessica', { title: null });
+	res.render ('jessica', { title: o });
 })
 .get('/write/:locationName/', function(request,res){
 	/*
