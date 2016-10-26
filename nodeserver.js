@@ -11,6 +11,28 @@ var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/or
 var db = new pg.Client(connectionString);
 db.connect();
 
+
+// abstract out db connection and query scaffolding
+function getDatabaseOutput (client, query, callback) {
+	/*
+	 * 	:client 	pg.Client 	the database to query
+	 *	:query 		string 	 	the exact psql query to run
+	 * 	:callback 	function 	the method to run on query end
+	 */
+ 
+	client.query (query, function (error, output) {
+		
+		if (error) throw error;
+
+		client.end (function (error) {
+			if (error) throw error;
+			client.end ();	
+			callback (output);
+		});
+	});
+}
+
+
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
@@ -26,32 +48,21 @@ app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
 	res.end('Your variable is ' + req.params.variableName);
 })
+
 .get('/locations/', function(req,res){
 	var o = null;
 
-	// read all location names in locations table
-	db.query('SELECT * FROM location', function (error, output) {
-		if (error) throw error;
-
-		// end 
-		db.end(function(error) {
-			if (error) throw error;
-
-			// add all location names to the output string
-			if (o === null) o = '';
-			for (index in output.rows) {
-				o = o + output.rows[index].name;
-			};
-			db.end();
-
-			/*
-			 * 	Render here inside the db connection!
-			 * 	- Async loading means o(utput) string won't update
-			 *	  until now
-			 */
-			res.render ('jessica', { title: o });
-		});
+	// pass through client and query then handle output in callback
+	getDatabaseOutput (db, 'SELECT * FROM location', function(output) {
+		// iterate through data on callback
+		if (o === null) o = '';
+		for (index in output.rows) {
+			o = o + output.rows[index].name;
+		}
+		// render page since db query is done and output parsed
+		res.render('jessica', { title: o });
 	});
+	res.end(o);
 
 	//
 	// /* Example Query Events */
