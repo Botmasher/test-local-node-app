@@ -41,9 +41,11 @@ app.get('/', function(req, res) {
 	var txt = testmodule.init();
 	res.end(txt);
 })
+
 .get('/jessica', function(req,res){
 	res.render('jessica', { title: 'Jessica'});
 })
+
 .get('/subdir/:variableName/', function(req,res){
 	res.setHeader('Content-Type', 'text/plain');
 	res.end('Your variable is ' + req.params.variableName);
@@ -78,32 +80,21 @@ app.get('/', function(req, res) {
 	// // end after last row emitted
 	// query.on ('end', function (error) {
 	// 	o = JSON.stringify(output.rows, null, "  ");
-	// 	if (error) throw error;
 	// 	db.end();
-	// 	if (o === null) o = 'No rows in the table.';
 	//	res.render ('jessica', { title: o });
 	// });
 })
+
 .get('/locations/JSON/', function(req, res){
 	res.setHeader('Content-Type', 'text/plain');
 	var o = null; 	// store output text for user
 
-	// query and callback
-	db.query('SELECT * FROM location', function (error, output) {
-
-		if (error) throw error;
-
-		// store json output when query finished
-		db.end(function(error) {
-			if (error) throw error;
-			o = JSON.stringify(output.rows, null, "  ");
-			db.end();
-
-			// display results
-			res.end(o);
-		});
+	getDatabaseOutput (db, 'SELECT * FROM location', function (output) {
+		if (o === null) o = JSON.stringify (output.rows, null, "  ");
+		res.end(o);
 	});
 })
+
 .get('/locations/:location/', function(req,res){
 	o = 'output text';
 	q = 'SELECT * FROM location WHERE name=$1::text';
@@ -115,6 +106,7 @@ app.get('/', function(req, res) {
 	});
 	res.render ('jessica', { title: o });
 })
+
 .get('/write/:locationName/', function(request,res){
 	/*
 	 * 	Test writing to db
@@ -138,6 +130,7 @@ app.get('/', function(req, res) {
 	// display text in browser
 	res.end(txt);
 })
+
 .get('/wipe/', function(request, result){
 	// CAREFUL - wipes the relation
 	var q = db.query("DELETE FROM location");
@@ -145,6 +138,7 @@ app.get('/', function(req, res) {
 	q.on('end', function() { db.end(); });
 	result.end('Successfully wiped table.');
 })
+
 .use(function(req,res,next){
 });
 
