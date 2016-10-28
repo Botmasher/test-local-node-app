@@ -13,14 +13,19 @@ db.connect();
 
 
 // abstract out db connection and query scaffolding
-function getDatabaseOutput (client, query, callback) {
+function getDatabaseOutput (client, query, callback, queryArgs) {
 	/*
-	 * 	:client 	pg.Client 	the database to query
-	 *	:query 		string 	 	the exact psql query to run
-	 * 	:callback 	function 	the method to run on query end
+	 * 	@param {pg.Client} client 	 -  the database to query
+	 *	@param {String}    query 	 -  the sql query to run
+	 * 	@param {Function}  callback  -  the method to run on query end
+	 * 	@param {Array} 	   queryArgs -  arguments to insert into query
 	 */
  
-	client.query (query, function (error, output) {
+ 	// Arguments inserted into query. Does client.query() process arrays?
+ 	if (queryArgs === undefined) queryArgs = null;
+
+ 	// run query then call your method
+	client.query (query, queryArgs, function (error, output) {
 		
 		if (error) throw error;
 
