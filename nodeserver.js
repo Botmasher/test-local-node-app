@@ -1,6 +1,3 @@
-// import our js functions
-var testmodule = require('./testmodule');
-
 // routing and templating
 var expressApp = require('express');
 var app = expressApp();
@@ -13,19 +10,15 @@ db.connect();
 
 
 // abstract out db connection and query scaffolding
-function getDatabaseOutput (client, query, callback, queryArgs) {
+function getDatabaseOutput (client, query, callback) {
 	/*
 	 * 	@param {pg.Client} client 	 -  the database to query
 	 *	@param {String}    query 	 -  the sql query to run
 	 * 	@param {Function}  callback  -  the method to run on query end
-	 * 	@param {Array} 	   queryArgs -  arguments to insert into query
 	 */
  
- 	// Arguments inserted into query. Does client.query() process arrays?
- 	if (queryArgs === undefined) queryArgs = null;
-
- 	// run query then call your method
-	client.query (query, queryArgs, function (error, output) {
+	// run query then call your method
+	client.query (query, function (error, output) {
 		
 		if (error) throw error;
 
@@ -43,7 +36,6 @@ app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
-	var txt = testmodule.init();
 	res.end(txt);
 })
 
@@ -169,8 +161,6 @@ const port = 8080;
 const server = http.createServer(function(req, res){
 	res.statusCode = 200;
 	res.setHeader('Content-Type', 'text/plain');
-
-	testmodule.init();
 
 	res.writeHead(200, {"Content-Type": "text/plain"});
 	// parse and use url
