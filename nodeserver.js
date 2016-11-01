@@ -36,7 +36,7 @@ app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
 	res.setHeader('Content-Type', 'text/plain');
-	res.end(txt);
+	res.end('root');
 })
 
 .get('/jessica', function(req,res){
@@ -61,7 +61,7 @@ app.get('/', function(req, res) {
 		// render page since db query is done and output parsed
 		res.render('jessica', { title: o });
 	});
-	res.end(o);
+	//res.end(o);
 
 	//
 	// /* Example Query Events */
@@ -83,7 +83,6 @@ app.get('/', function(req, res) {
 })
 
 .get('/locations/JSON/', function(req, res){
-	res.setHeader('Content-Type', 'text/plain');
 	var o = null; 	// store output text for user
 
 	getDatabaseOutput (db, 'SELECT * FROM location', function (output) {
