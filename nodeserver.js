@@ -55,11 +55,9 @@ app.get('/', function(req, res) {
 	getDatabaseOutput (db, 'SELECT * FROM location', function(output) {
 		// iterate through data on callback
 		if (o === null) o = '';
-		for (index in output.rows) {
-			o = o + output.rows[index].name;
-		}
+		o = output.rows;
 		// render page since db query is done and output parsed
-		res.render('jessica', { title: o });
+		res.render('jessica', { title: 'Palm Oil Locations', data: o });
 	});
 	//res.end(o);
 

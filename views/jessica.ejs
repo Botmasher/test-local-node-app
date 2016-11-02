@@ -2,3 +2,11 @@
 <h2><%= title %></h2>
 <h4>And here is a number:</h4>
 <h4><%= Math.random() %></h4>
+
+<p>Some data I'm passing here to display:</p>
+
+<ul>
+<% for (i in data) { %>
+	<li><%= data[i].name %></li>
+<% } %>
+</ul>
