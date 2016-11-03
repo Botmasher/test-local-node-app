@@ -10,15 +10,16 @@ db.connect();
 
 
 // abstract out db connection and query scaffolding
-function getDatabaseOutput (client, query, callback) {
+function getDatabaseOutput (client, query, qStrArgs, callback) {
 	/*
 	 * 	@param {pg.Client} client 	 -  the database to query
 	 *	@param {String}    query 	 -  the sql query to run
 	 * 	@param {Function}  callback  -  the method to run on query end
+	 * 	@param {Array} 	   qStrArgs  - 	string interpolations in query
 	 */
  
 	// run query then call your method
-	client.query (query, function (error, output) {
+	client.query (query, qStrArgs, function (error, output) {
 		
 		if (error) throw error;
 
@@ -49,13 +50,10 @@ app.get('/', function(req, res) {
 })
 
 .get('/locations/', function(req,res){
-	var o = null;
-
 	// pass through client and query then handle output in callback
-	getDatabaseOutput (db, 'SELECT * FROM location', function(output) {
-		// iterate through data on callback
-		if (o === null) o = '';
-		o = output.rows;
+	getDatabaseOutput (db, 'SELECT * FROM location', [], function(output) {
+		// reference data on callback
+		var o = output.rows;
 		// render page since db query is done and output parsed
 		res.render('jessica', { title: 'Palm Oil Locations', data: o });
 	});
@@ -83,22 +81,19 @@ app.get('/', function(req, res) {
 .get('/locations/JSON/', function(req, res){
 	var o = null; 	// store output text for user
 
-	getDatabaseOutput (db, 'SELECT * FROM location', function (output) {
-		if (o === null) o = JSON.stringify (output.rows, null, "  ");
+	getDatabaseOutput (db, 'SELECT * FROM location', [], function (output) {
+		o = JSON.stringify (output.rows, null, "  ");
 		res.end(o);
 	});
 })
 
 .get('/locations/:location/', function(req,res){
-	o = 'output text';
-	q = 'SELECT * FROM location WHERE name=$1::text';
 	// read a single location
-	db.query(q, [req.params.location], function (error, result) {
-		if (error) throw error; 	// error while emanating rows
-		o = result.rows[0];			// store output
-		db.end(function(error){if (error) throw error;});	// error on close
+	q = 'SELECT * FROM location WHERE name=$1::text';
+	getDatabaseOutput (db, q, [req.params.location], function (output) {
+		var o = output.rows;
+		res.render ('jessica', { title: 'Single Palm Oil Location', data: o });
 	});
-	res.render ('jessica', { title: o });
 })
 
 .get('/write/:locationName/', function(request,res){
