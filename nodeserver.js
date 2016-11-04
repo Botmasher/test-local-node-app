@@ -35,21 +35,16 @@ function getDatabaseOutput (client, query, qStrArgs, callback) {
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
 	res.setHeader('Content-Type', 'text/plain');
 	res.end('root');
 })
 
-.get('/jessica', function(req,res){
+.get('/jessica', function (req, res) {
 	res.render('jessica', { title: 'Jessica'});
 })
 
-.get('/subdir/:variableName/', function(req,res){
-	res.setHeader('Content-Type', 'text/plain');
-	res.end('Your variable is ' + req.params.variableName);
-})
-
-.get('/locations/', function(req,res){
+.get('/locations/', function (req, res) {
 	// pass through client and query then handle output in callback
 	getDatabaseOutput (db, 'SELECT * FROM location', [], function(output) {
 		// reference data on callback
@@ -78,7 +73,7 @@ app.get('/', function(req, res) {
 	// });
 })
 
-.get('/locations/JSON/', function(req, res){
+.get('/locations/JSON/', function (req, res){
 	var o = null; 	// store output text for user
 
 	getDatabaseOutput (db, 'SELECT * FROM location', [], function (output) {
@@ -87,45 +82,31 @@ app.get('/', function(req, res) {
 	});
 })
 
-.get('/locations/:location/', function(req,res){
-	// read a single location
-	q = 'SELECT * FROM location WHERE name=$1::text';
+.get('/locations/:location/', function (req, res) {
+	// read a single location with request.params.variableName
+	var q = 'SELECT * FROM location WHERE name=$1::text';
 	getDatabaseOutput (db, q, [req.params.location], function (output) {
 		var o = output.rows;
 		res.render ('jessica', { title: 'Single Palm Oil Location', data: o });
 	});
 })
 
-.get('/write/:locationName/', function(request,res){
-	/*
-	 * 	Test writing to db
-	 */
-	// see that you can access url variable
-	console.log (locationName);
-
-	// execute query queue
-	var txt = 'Writing to database.';
-
-	// // TODO interpolate locationName string var on this line
-	// db.query("INSERT INTO location(name) values('someplace')");
-	
-	// read table data to verify insertion
-	var query = db.query("SELECT * FROM location");
-	// cycle through all rows
-	query.on('row', function(row) { console.log(row.name); });
-	// end after last row emitted
-	query.on('end', function() { db.end(); });
-
-	// display text in browser
-	res.end(txt);
+.get('/write/:location/', function (req,res){
+	// create insert query
+	var q = 'INSERT INTO location(name) values($1::text)';
+	// run insert query and reference data on callback
+	getDatabaseOutput (db, q, [req.params.location], function (output) {
+		res.render ('jessica', { title: 'Location added!', data: output });
+	});
 })
 
-.get('/wipe/', function(request, result){
+.get('/wipe/:relation/', function (req, res){
 	// CAREFUL - wipes the relation
-	var q = db.query("DELETE FROM location");
-	q.on('row', function(r) { console.log(r.name); });
-	q.on('end', function() { db.end(); });
-	result.end('Successfully wiped table.');
+	var q = 'DELETE FROM $1::text';
+	// run insert query and reference data on callback
+	getDatabaseOutput (db, q, [req.params.relation], function (output) {
+		res.end ('Successfully wiped table!');
+	});
 })
 
 .use(function(req,res,next){
