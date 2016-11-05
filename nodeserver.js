@@ -9,6 +9,29 @@ var db = new pg.Client(connectionString);
 db.connect();
 
 
+
+// TEST! build prototype to handle app functionality
+var App = function (client, viewDirectory, viewEngine) {
+	/*
+	 * 	@param {pg.Clent} client 		- the database to query for models
+	 * 	@param {String} viewDirectory 	- where to look for views templates
+	 * 	@param {} 
+	 */
+	console.log ("Created app instance!");
+}
+App.prototype.set = function () {
+	app.set ('views', this.views);
+	app.set ('view engine', this.viewEngine);
+}
+App.prototype.getOutput = function() {
+	getDatabaseOutput (this.db, 'SELECT * FROM location', [], function (o) {
+		console.log (o);
+	});
+}
+var myApp = new App (db, './views', 'ejs');
+// END TEST
+
+
 // abstract out db connection and query scaffolding
 function getDatabaseOutput (client, query, qStrArgs, callback) {
 	/*
@@ -30,7 +53,6 @@ function getDatabaseOutput (client, query, qStrArgs, callback) {
 		});
 	});
 }
-
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
