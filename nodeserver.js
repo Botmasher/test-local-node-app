@@ -19,14 +19,41 @@ var App = function (client, viewDirectory, viewEngine) {
 	 */
 	console.log ("Created app instance!");
 }
-App.prototype.set = function () {
+App.prototype.setup = function () {
 	app.set ('views', this.views);
 	app.set ('view engine', this.viewEngine);
 }
-App.prototype.getOutput = function() {
+App.prototype.getOutput = function () {
 	getDatabaseOutput (this.db, 'SELECT * FROM location', [], function (o) {
 		console.log (o);
 	});
+}
+App.prototype.get = function (route, query, qArgs, template) {
+	/*
+	 * 	Define endpoint, query to run and template to render
+	 */
+	app.get(route, function (req, res) {
+		res.setHeader('Content-Type', 'text/plain');
+		getDatabaseOutput (this.client, query, qArgs, function (output) {
+			// reference data on callback
+			var o = output.rows;
+			// render page since db query is done and output parsed
+			res.render (template, { title: 'Palm Oil Locations', data: o });
+		});
+	})
+}
+App.prototype.getJSON = function (route, query, qArgs) {
+	/*
+	 * 	Define endpoint and query for JSON
+	 */
+	app.get (route, function (req, res) {
+		res.setHeader ('Content-Type', 'text/plain');
+		getDatabaseOutput (this.clent, query, qArgs, function (output) {
+			o = JSON.stringify (output.rows, null, "  ");
+			res.end (o);
+		})
+	});
+
 }
 var myApp = new App (db, './views', 'ejs');
 // END TEST
