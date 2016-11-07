@@ -15,17 +15,20 @@ var App = function (client, viewDirectory, viewEngine) {
 	/*
 	 * 	@param {pg.Clent} client 		- the database to query for models
 	 * 	@param {String} viewDirectory 	- where to look for views templates
-	 * 	@param {} 
+	 * 	@param {String} viewEngine 		- view engine to use when rendering 
 	 */
+	this.client = client;
+	this.views = viewDirectory;
+	this.viewEngine = viewEngine;
 	console.log ("Created app instance!");
 }
-App.prototype.setup = function () {
+App.prototype.setViews = function () {
 	app.set ('views', this.views);
 	app.set ('view engine', this.viewEngine);
 }
-App.prototype.getOutput = function () {
-	getDatabaseOutput (this.db, 'SELECT * FROM location', [], function (o) {
-		console.log (o);
+App.prototype.getOutput = function (query, qArgs) {
+	getDatabaseOutput (this.client, query, qArgs, function (o) {
+		return o;
 	});
 }
 App.prototype.get = function (route, query, qArgs, template) {
@@ -56,6 +59,7 @@ App.prototype.getJSON = function (route, query, qArgs) {
 
 }
 var myApp = new App (db, './views', 'ejs');
+myApp.get('/test/', 'SELECT * FROM location', [], 'jessica');
 // END TEST
 
 
