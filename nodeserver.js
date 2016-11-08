@@ -26,22 +26,35 @@ App.prototype.setViews = function () {
 	app.set ('views', this.views);
 	app.set ('view engine', this.viewEngine);
 }
-App.prototype.getOutput = function (query, qArgs) {
-	getDatabaseOutput (this.client, query, qArgs, function (o) {
+App.prototype.getDatabaseOutput = function (query, queryArgs) {
+	// query client db with this query and optional string interpolation array
+	getDatabaseOutput (this.client, query, queryArgs, function (o) {
 		return o;
 	});
 }
-App.prototype.get = function (route, query, qArgs, template) {
+App.prototype.get = function (route, template, viewVars) {
+	// simple get using rendered template and passed in template variables object
+	app.get (route, function (req, res) {
+		res.setHeader ('Content-Type', 'text/plain');
+		res.render (template, viewVars);
+	});
+}
+App.prototype.getWithData = function (route, query, queryArgs, template, viewVars) {
 	/*
 	 * 	Define endpoint, query to run and template to render
+	 * 	template - a template for this object's viewEngine
+	 *  viewVars - object notation where keys are var names from template
+	 *			   and values are 
 	 */
 	app.get(route, function (req, res) {
 		res.setHeader('Content-Type', 'text/plain');
-		getDatabaseOutput (this.client, query, qArgs, function (output) {
+		getDatabaseOutput (this.client, query, queryArgs, function (output) {
 			// reference data on callback
 			var o = output.rows;
+			// add data to template variables
+			viewVars[data] = o;
 			// render page since db query is done and output parsed
-			res.render (template, { title: 'Palm Oil Locations', data: o });
+			res.render (template, viewVars);
 		});
 	})
 }
@@ -56,10 +69,9 @@ App.prototype.getJSON = function (route, query, qArgs) {
 			res.end (o);
 		})
 	});
-
 }
 var myApp = new App (db, './views', 'ejs');
-myApp.get('/test/', 'SELECT * FROM location', [], 'jessica');
+myApp.get('/test/', 'SELECT * FROM location', [], 'jessica', {title: 'xyz'});
 // END TEST
 
 
