@@ -9,7 +9,6 @@ var db = new pg.Client(connectionString);
 db.connect();
 
 
-
 // TEST! build prototype to handle app functionality
 var App = function (client, viewDirectory, viewEngine) {
 	/*
@@ -20,11 +19,14 @@ var App = function (client, viewDirectory, viewEngine) {
 	this.client = client;
 	this.views = viewDirectory;
 	this.viewEngine = viewEngine;
-	console.log ("Created app instance!");
+	this.app = app;
 }
 App.prototype.setViews = function () {
 	app.set ('views', this.views);
 	app.set ('view engine', this.viewEngine);
+}
+App.prototype.listen = function (port) {
+	this.app.listen (port);
 }
 App.prototype.getDatabaseOutput = function (query, queryArgs) {
 	// query client db with this query and optional string interpolation array
@@ -34,8 +36,8 @@ App.prototype.getDatabaseOutput = function (query, queryArgs) {
 }
 App.prototype.get = function (route, template, viewVars) {
 	// simple get using rendered template and passed in template variables object
-	app.get (route, function (req, res) {
-		res.setHeader ('Content-Type', 'text/plain');
+	this.app.get (route, function (req, res) {
+		res.setHeader ('Content-Type', 'text/html');
 		res.render (template, viewVars);
 	});
 }
@@ -46,32 +48,35 @@ App.prototype.getWithData = function (route, query, queryArgs, template, viewVar
 	 *  viewVars - object notation where keys are var names from template
 	 *			   and values are 
 	 */
-	app.get(route, function (req, res) {
-		res.setHeader('Content-Type', 'text/plain');
-		getDatabaseOutput (this.client, query, queryArgs, function (output) {
+	var client = this.client;
+	this.app.get (route, function (req, res) {
+		res.setHeader('Content-Type', 'text/html');
+		getDatabaseOutput (client, query, queryArgs, function (output) {
 			// reference data on callback
 			var o = output.rows;
 			// add data to template variables
-			viewVars[data] = o;
+			viewVars.data = o;
 			// render page since db query is done and output parsed
 			res.render (template, viewVars);
 		});
 	})
 }
-App.prototype.getJSON = function (route, query, qArgs) {
+App.prototype.getJSON = function (route, client, query, qArgs) {
 	/*
 	 * 	Define endpoint and query for JSON
 	 */
-	app.get (route, function (req, res) {
+	this.app.get (route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/plain');
-		getDatabaseOutput (this.clent, query, qArgs, function (output) {
+		getDatabaseOutput (client, query, qArgs, function (output) {
 			o = JSON.stringify (output.rows, null, "  ");
 			res.end (o);
 		})
 	});
 }
 var myApp = new App (db, './views', 'ejs');
-myApp.get('/test/', 'SELECT * FROM location', [], 'jessica', {title: 'xyz'});
+myApp.setViews ();
+myApp.getWithData ('/test/', 'SELECT * FROM location', [], 'jessica', {title: 'xyz'});
+myApp.listen (8080);
 // END TEST
 
 
@@ -97,87 +102,87 @@ function getDatabaseOutput (client, query, qStrArgs, callback) {
 	});
 }
 
-app.set('views', './views');
-app.set('view engine', 'ejs');
+// app.set('views', './views');
+// app.set('view engine', 'ejs');
 
-app.get('/', function (req, res) {
-	res.setHeader('Content-Type', 'text/plain');
-	res.end('root');
-})
+// app.get('/', function (req, res) {
+// 	res.setHeader('Content-Type', 'text/plain');
+// 	res.end('root');
+// })
 
-.get('/jessica', function (req, res) {
-	res.render('jessica', { title: 'Jessica'});
-})
+// .get('/jessica', function (req, res) {
+// 	res.render('jessica', { title: 'Jessica'});
+// })
 
-.get('/locations/', function (req, res) {
-	// pass through client and query then handle output in callback
-	getDatabaseOutput (db, 'SELECT * FROM location', [], function(output) {
-		// reference data on callback
-		var o = output.rows;
-		// render page since db query is done and output parsed
-		res.render('jessica', { title: 'Palm Oil Locations', data: o });
-	});
-	//res.end(o);
+// .get('/locations/', function (req, res) {
+// 	// pass through client and query then handle output in callback
+// 	getDatabaseOutput (db, 'SELECT * FROM location', [], function(output) {
+// 		// reference data on callback
+// 		var o = output.rows;
+// 		// render page since db query is done and output parsed
+// 		res.render('jessica', { title: 'Palm Oil Locations', data: o });
+// 	});
+// 	//res.end(o);
 
-	//
-	// /* Example Query Events */
-	// 
-	// query = db.query('SELECT * FROM location');
-	// 
-	// // do while emitting rows
-	// query.on ('row', function (row, result) {
-	// //	result.addRow(row);
-	// //	o = o + row.name + '\n';
-	// });
-	//
-	// // end after last row emitted
-	// query.on ('end', function (error) {
-	// 	o = JSON.stringify(output.rows, null, "  ");
-	// 	db.end();
-	//	res.render ('jessica', { title: o });
-	// });
-})
+// 	//
+// 	// /* Example Query Events */
+// 	// 
+// 	// query = db.query('SELECT * FROM location');
+// 	// 
+// 	// // do while emitting rows
+// 	// query.on ('row', function (row, result) {
+// 	// //	result.addRow(row);
+// 	// //	o = o + row.name + '\n';
+// 	// });
+// 	//
+// 	// // end after last row emitted
+// 	// query.on ('end', function (error) {
+// 	// 	o = JSON.stringify(output.rows, null, "  ");
+// 	// 	db.end();
+// 	//	res.render ('jessica', { title: o });
+// 	// });
+// })
 
-.get('/locations/JSON/', function (req, res){
-	var o = null; 	// store output text for user
+// .get('/locations/JSON/', function (req, res){
+// 	var o = null; 	// store output text for user
 
-	getDatabaseOutput (db, 'SELECT * FROM location', [], function (output) {
-		o = JSON.stringify (output.rows, null, "  ");
-		res.end(o);
-	});
-})
+// 	getDatabaseOutput (db, 'SELECT * FROM location', [], function (output) {
+// 		o = JSON.stringify (output.rows, null, "  ");
+// 		res.end(o);
+// 	});
+// })
 
-.get('/locations/:location/', function (req, res) {
-	// read a single location with request.params.variableName
-	var q = 'SELECT * FROM location WHERE name=$1::text';
-	getDatabaseOutput (db, q, [req.params.location], function (output) {
-		var o = output.rows;
-		res.render ('jessica', { title: 'Single Palm Oil Location', data: o });
-	});
-})
+// .get('/locations/:location/', function (req, res) {
+// 	// read a single location with request.params.variableName
+// 	var q = 'SELECT * FROM location WHERE name=$1::text';
+// 	getDatabaseOutput (db, q, [req.params.location], function (output) {
+// 		var o = output.rows;
+// 		res.render ('jessica', { title: 'Single Palm Oil Location', data: o });
+// 	});
+// })
 
-.get('/write/:location/', function (req,res){
-	// create insert query
-	var q = 'INSERT INTO location(name) values($1::text)';
-	// run insert query and reference data on callback
-	getDatabaseOutput (db, q, [req.params.location], function (output) {
-		res.render ('jessica', { title: 'Location added!', data: output });
-	});
-})
+// .get('/write/:location/', function (req,res){
+// 	// create insert query
+// 	var q = 'INSERT INTO location(name) values($1::text)';
+// 	// run insert query and reference data on callback
+// 	getDatabaseOutput (db, q, [req.params.location], function (output) {
+// 		res.render ('jessica', { title: 'Location added!', data: output });
+// 	});
+// })
 
-.get('/wipe/:relation/', function (req, res){
-	// CAREFUL - wipes the relation
-	var q = 'DELETE FROM $1::text';
-	// run insert query and reference data on callback
-	getDatabaseOutput (db, q, [req.params.relation], function (output) {
-		res.end ('Successfully wiped table!');
-	});
-})
+// .get('/wipe/:relation/', function (req, res){
+// 	// CAREFUL - wipes the relation
+// 	var q = 'DELETE FROM $1::text';
+// 	// run insert query and reference data on callback
+// 	getDatabaseOutput (db, q, [req.params.relation], function (output) {
+// 		res.end ('Successfully wiped table!');
+// 	});
+// })
 
-.use(function(req,res,next){
-});
+// .use(function(req,res,next){
+// });
 
-app.listen(8080);
+// app.listen(8080);
 
 /*
 
