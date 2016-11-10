@@ -10,29 +10,22 @@ db.connect();
 
 
 // TEST! build prototype to handle app functionality
-var App = function (client, viewDirectory, viewEngine) {
-	/*
-	 * 	@param {pg.Clent} client 		- the database to query for models
-	 * 	@param {String} viewDirectory 	- where to look for views templates
-	 * 	@param {String} viewEngine 		- view engine to use when rendering 
-	 */
-	this.client = client;
-	this.views = viewDirectory;
-	this.viewEngine = viewEngine;
-	this.app = app;
-}
-App.prototype.setViews = function () {
-	app.set ('views', this.views);
-	app.set ('view engine', this.viewEngine);
+var App = function () {
+	this.app = expressApp();
 }
 App.prototype.listen = function (port) {
+	// serve app on the port given
 	this.app.listen (port);
 }
-App.prototype.getDatabaseOutput = function (query, queryArgs) {
-	// query client db with this query and optional string interpolation array
-	getDatabaseOutput (this.client, query, queryArgs, function (o) {
-		return o;
-	});
+App.prototype.views = function (viewsDirectory, viewEngine) {
+	// set the templates directory and engine
+	this.app.set ('views', viewsDirectory);
+	this.app.set ('view engine', viewEngine);
+}
+App.prototype.template = function (template, templateVars) {
+	// set the template for the next view render
+	this.template = template;
+	this.templateVars = templateVars;
 }
 App.prototype.get = function (route, template, viewVars) {
 	// simple get using rendered template and passed in template variables object
@@ -48,55 +41,53 @@ App.prototype.getWithData = function (route, query, queryArgs, template, viewVar
 	 *  viewVars - object notation where keys are var names from template
 	 *			   and values are 
 	 */
-	var client = this.client;
 	this.app.get (route, function (req, res) {
 		res.setHeader('Content-Type', 'text/html');
-		getDatabaseOutput (client, query, queryArgs, function (output) {
-			// reference data on callback
-			var o = output.rows;
+		getDatabaseOutput (query, queryArgs, function (output) {
 			// add data to template variables
-			viewVars.data = o;
+			viewVars.data = output.rows;
 			// render page since db query is done and output parsed
 			res.render (template, viewVars);
 		});
 	})
 }
-App.prototype.getJSON = function (route, client, query, qArgs) {
+App.prototype.getJSON = function (route, query, qArgs) {
 	/*
 	 * 	Define endpoint and query for JSON
 	 */
 	this.app.get (route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/plain');
-		getDatabaseOutput (client, query, qArgs, function (output) {
+		getDatabaseOutput (query, qArgs, function (output) {
 			o = JSON.stringify (output.rows, null, "  ");
 			res.end (o);
 		})
 	});
 }
-var myApp = new App (db, './views', 'ejs');
-myApp.setViews ();
+var myApp = new App();
+myApp.views('./views', 'ejs');
+
+myApp.template ('jessica', {title:'xyz'});
 myApp.getWithData ('/test/', 'SELECT * FROM location', [], 'jessica', {title: 'xyz'});
+
 myApp.listen (8080);
 // END TEST
 
 
-// abstract out db connection and query scaffolding
-function getDatabaseOutput (client, query, qStrArgs, callback) {
+// abstract out db query and callback for rendering pages
+function getDatabaseOutput (query, qStrArgs, callback) {
 	/*
-	 * 	@param {pg.Client} client 	 -  the database to query
+	 * 	// @param {pg.Client} client 	 -  the database to query
 	 *	@param {String}    query 	 -  the sql query to run
 	 * 	@param {Function}  callback  -  the method to run on query end
 	 * 	@param {Array} 	   qStrArgs  - 	string interpolations in query
 	 */
  
 	// run query then call your method
-	client.query (query, qStrArgs, function (error, output) {
-		
+	db.query (query, qStrArgs, function (error, output) {
 		if (error) throw error;
-
-		client.end (function (error) {
+		db.end (function (error) {
 			if (error) throw error;
-			client.end ();	
+			db.end ();	
 			callback (output);
 		});
 	});
