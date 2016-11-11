@@ -17,37 +17,41 @@ App.prototype.listen = function (port) {
 	// serve app on the port given
 	this.app.listen (port);
 }
-App.prototype.views = function (viewsDirectory, viewEngine) {
+App.prototype.setViews = function (viewsDirectory, viewEngine) {
 	// set the templates directory and engine
 	this.app.set ('views', viewsDirectory);
 	this.app.set ('view engine', viewEngine);
 }
-App.prototype.template = function (template, templateVars) {
+App.prototype.setTemplate = function (template, templateVars) {
 	// set the template for the next view render
 	this.template = template;
 	this.templateVars = templateVars;
 }
-App.prototype.get = function (route, template, viewVars) {
+App.prototype.get = function (route) {
 	// simple get using rendered template and passed in template variables object
+	var template = this.template;
+	var templateVars = this.templateVars;
 	this.app.get (route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/html');
-		res.render (template, viewVars);
+		res.render (template, templateVars);
 	});
 }
-App.prototype.getWithData = function (route, query, queryArgs, template, viewVars) {
+App.prototype.getWithData = function (route, query, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
-	 * 	template - a template for this object's viewEngine
-	 *  viewVars - object notation where keys are var names from template
-	 *			   and values are 
+	 * 		- uses current app template and templateVars to render
 	 */
+	// store template info for building template
+	var template = this.template;
+	var templateVars = this.templateVars;
+	// express app get method
 	this.app.get (route, function (req, res) {
 		res.setHeader('Content-Type', 'text/html');
 		getDatabaseOutput (query, queryArgs, function (output) {
 			// add data to template variables
-			viewVars.data = output.rows;
+			templateVars.data = output.rows;
 			// render page since db query is done and output parsed
-			res.render (template, viewVars);
+			res.render (template, templateVars);
 		});
 	})
 }
@@ -63,11 +67,18 @@ App.prototype.getJSON = function (route, query, qArgs) {
 		})
 	});
 }
-var myApp = new App();
-myApp.views('./views', 'ejs');
 
-myApp.template ('jessica', {title:'xyz'});
-myApp.getWithData ('/test/', 'SELECT * FROM location', [], 'jessica', {title: 'xyz'});
+// test setting up app instance
+var myApp = new App();
+myApp.setViews('./views', 'ejs');
+
+// test database query load to page
+myApp.setTemplate ('jessica', {title:'xyz'});
+myApp.getWithData ('/test1/', 'SELECT * FROM location', []);
+
+// test simple get
+myApp.setTemplate ('jessica', { title: 'test2', data: null });
+myApp.get ('/test2/');
 
 myApp.listen (8080);
 // END TEST
