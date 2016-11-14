@@ -1,15 +1,12 @@
-// postgres db connection
-var pg = require('pg');
-var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/orangutan';
-var db = new pg.Client(connectionString);
-db.connect();
-
 // our custom app prototype wrapped around Express app
 var scriptApp = require('./scriptapp');
+var scriptDB = require('./scriptdb');
 
 // test setting up app instance
+var db = new scriptDB.PgClient();
 var myApp = new scriptApp.App();
 myApp.setViews('./views', 'ejs');
+myApp.setDatabase(db);
 
 // test database query load to page - "data" key added from query in getWithData
 myApp.setTemplate ('jessica', {title:'First Test'});
@@ -20,28 +17,7 @@ myApp.setTemplate ('jessica', { title: 'Second Test', data: null });
 myApp.get ('/test2/');
 
 myApp.listen (8080);
-// END TEST
 
-
-// abstract out db query and callback for rendering pages
-function getDatabaseOutput (query, qStrArgs, callback) {
-	/*
-	 * 	// @param {pg.Client} client 	 -  the database to query
-	 *	@param {String}    query 	 -  the sql query to run
-	 * 	@param {Function}  callback  -  the method to run on query end
-	 * 	@param {Array} 	   qStrArgs  - 	string interpolations in query
-	 */
- 
-	// run query then call your method
-	db.query (query, qStrArgs, function (error, output) {
-		if (error) throw error;
-		db.end (function (error) {
-			if (error) throw error;
-			db.end ();	
-			callback (output);
-		});
-	});
-}
 
 // app.set('views', './views');
 // app.set('view engine', 'ejs');

@@ -1,4 +1,4 @@
-// TEST! build prototype to handle app functionality
+// build prototype to handle app functionality
 var App = function () {
 	// routing and templating Express app
 	var expressApp = require('express');
@@ -7,6 +7,10 @@ var App = function () {
 App.prototype.listen = function (port) {
 	// serve app on the port given
 	this.app.listen (port);
+}
+App.prototype.setDatabase = function (client) {
+	// store pg client reference for querying
+	this.db = client;
 }
 App.prototype.setViews = function (viewsDirectory, viewEngine) {
 	// set the templates directory and engine
@@ -40,9 +44,10 @@ App.prototype.getWithData = function (route, query, queryArgs) {
 	 * 	  - takes query and string interpolation args expected by pg query
 	 */
 	
-	// store template info for building template
+	// store db and template info for querying and building template
 	var template = this.template;
 	var templateVars = this.templateVars;
+	var client = this.db;
 
 	// run the simple get method instead if there's no query
 	if (query === undefined) this.get (route);
@@ -53,7 +58,7 @@ App.prototype.getWithData = function (route, query, queryArgs) {
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
 		// my method for querying - pass callback to render once query is done
-		getDatabaseOutput (query, queryArgs, function (output) {
+		client.query (query, queryArgs, function (output) {
 			// add data to template variables
 			templateVars.data = output.rows;
 			// render page since db query is done and output parsed
@@ -65,10 +70,14 @@ App.prototype.getJSON = function (route, query, qArgs) {
 	/*
 	 * 	Define endpoint and query for JSON using basic express app get
 	 */
+
+	// store db info for querying
+	var client = this.db;
+
 	this.app.get (route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/plain');
 		// my db querying method - pass callback to store and display output
-		getDatabaseOutput (query, qArgs, function (output) {
+		client.query (query, qArgs, function (output) {
 			o = JSON.stringify (output.rows, null, "  ");
 			res.end (o);
 		})
