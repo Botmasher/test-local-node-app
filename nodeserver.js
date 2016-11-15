@@ -1,20 +1,32 @@
-// our custom app prototype wrapped around Express app
-var scriptApp = require('./scriptapp');
-var scriptDB = require('./scriptdb');
+// our custom app and db prototype wrapped around express and pgclient
+var expressHugger = require ('./scriptapp');
+var appDB = require ('./scriptdb');
 
 // test setting up app instance
-var db = new scriptDB.PgClient();
-var myApp = new scriptApp.App();
+var db = new appDB.PgClient();
+var app = new expressHugger.App();
 myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
-// test database query load to page - "data" key added from query in getWithData
-myApp.setTemplate ('jessica', {title:'First Test'});
-myApp.getWithData ('/test1/', 'SELECT * FROM location');
-
 // test simple get
-myApp.setTemplate ('jessica', { title: 'Second Test', data: null });
-myApp.get ('/test2/');
+myApp.setTemplate ('jessica', { title: 'Palm Oil Locations', data: null });
+myApp.get ('/');
+
+// test database query load to page - "data" key added from query in getWithData
+myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+myApp.getWithData ('/jessica/', 'SELECT * FROM location');
+
+// test get data as js object
+myApp.getJSON ('SELECT * FROM location');
+
+// test write
+// ADD scriptapp App() ability to handle uri params
+myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+myApp.getWithData ('/write/:relation', 'INSERT INTO $1::text(name) values($2::text)');
+
+// test delete
+myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+myApp.getWithData ('/wipe/:relation', 'DELETE * FROM location');
 
 myApp.listen (8080);
 
