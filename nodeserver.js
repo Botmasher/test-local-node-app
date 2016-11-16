@@ -4,7 +4,7 @@ var appDB = require ('./scriptdb');
 
 // test setting up app instance
 var db = new appDB.PgClient();
-var app = new expressHugger.App();
+var myApp = new expressHugger.App();
 myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
@@ -14,19 +14,22 @@ myApp.get ('/');
 
 // test database query load to page - "data" key added from query in getWithData
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.getWithData ('/jessica/', 'SELECT * FROM location');
+myApp.getData ('/jessica/', 'SELECT * FROM location');
 
 // test get data as js object
 myApp.getJSON ('SELECT * FROM location');
 
-// test write
-// ADD scriptapp App() ability to handle uri params
+// test load data from url params
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.getWithData ('/write/:relation', 'INSERT INTO $1::text(name) values($2::text)');
+myApp.getDataWithParams ('/:relation/', 'SELECT * FROM $1::text');
+
+// test write
+//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+//myApp.getDataWithParams ('/write/:relation', 'INSERT INTO $1::text(name) values($2::text)');
 
 // test delete
-myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.getWithData ('/wipe/:relation', 'DELETE * FROM location');
+//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+//myApp.getDataWithParams ('/wipe/:relation', 'DELETE * FROM location');
 
 myApp.listen (8080);
 

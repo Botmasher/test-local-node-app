@@ -4,19 +4,23 @@ var App = function () {
 	var expressApp = require('express');
 	this.app = expressApp();
 }
+
 App.prototype.listen = function (port) {
 	// serve app on the port given
 	this.app.listen (port);
 }
+
 App.prototype.setDatabase = function (client) {
 	// store pg client reference for querying
 	this.db = client;
 }
+
 App.prototype.setViews = function (viewsDirectory, viewEngine) {
 	// set the templates directory and engine
 	this.app.set ('views', viewsDirectory);
 	this.app.set ('view engine', viewEngine);
 }
+
 App.prototype.setTemplate = function (template, templateVars) {
 	// set the template for the next view render
 	this.template = template;
@@ -27,6 +31,7 @@ App.prototype.setTemplate = function (template, templateVars) {
 		this.templateVars = templateVars;
 	}
 }
+
 App.prototype.get = function (route) {
 	// simple get using rendered template and passed in template variables object
 	var template = this.template;
@@ -37,7 +42,8 @@ App.prototype.get = function (route) {
 		res.render (template, templateVars);
 	});
 }
-App.prototype.getWithData = function (route, query, queryArgs) {
+
+App.prototype.getData = function (route, query, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
 	 * 	  - uses current app template and templateVars to render
@@ -66,6 +72,31 @@ App.prototype.getWithData = function (route, query, queryArgs) {
 		});
 	})
 }
+
+App.prototype.getDataWithParams = function (route, query) {
+	// this is a duplicate of .getData with one addition:
+	//   - pull out uri params and interpolate them into the query
+	var template = this.template;
+	var templateVars = this.templateVars;
+	var client = this.db;
+
+	if (query === undefined) this.get (route);
+
+	this.app.get (route, function (req, res) {
+		res.setHeader ('Content-Type', 'text/html');
+		// store uri params to insert into query
+		var qArgs = [];
+		for (pindex in req.params) {
+			qArgs.push (req.params[pindex]);
+		}
+		// use those qArgs to interpolate into sql query and render page
+		client.query (query, qArgs, function (output) {
+			templateVars.data = output.rows;
+			res.render (template, templateVars);
+		});
+	});
+}
+
 App.prototype.getJSON = function (route, query, qArgs) {
 	/*
 	 * 	Define endpoint and query for JSON using basic express app get
