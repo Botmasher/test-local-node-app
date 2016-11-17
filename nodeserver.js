@@ -21,7 +21,7 @@ myApp.getJSON ('SELECT * FROM location');
 
 // test load data from url params
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.getDataWithParams ('/:relation/', 'SELECT * FROM $1::text');
+myApp.getDataWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
 // test write
 //myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });

@@ -87,6 +87,7 @@ App.prototype.getDataWithParams = function (route, query) {
 		// store uri params to insert into query
 		var qArgs = [];
 		for (pindex in req.params) {
+			console.log(req.params[pindex]);
 			qArgs.push (req.params[pindex]);
 		}
 		// use those qArgs to interpolate into sql query and render page
