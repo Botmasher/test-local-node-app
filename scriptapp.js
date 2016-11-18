@@ -98,6 +98,13 @@ App.prototype.getDataWithParams = function (route, query) {
 	});
 }
 
+App.prototype.getWithCallback = function (route, callback) {
+	this.app.get(route, function (req,res) {
+		res.setHeader ('Content-Type', 'text/html');
+		callback (req, res);
+	});
+}
+
 App.prototype.getJSON = function (route, query, qArgs) {
 	/*
 	 * 	Define endpoint and query for JSON using basic express app get

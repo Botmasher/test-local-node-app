@@ -23,6 +23,13 @@ myApp.getJSON ('SELECT * FROM location');
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.getDataWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
+// test simple get that gives me a chance to callback for render, params
+myApp.setTemplate ('jessica', {title: 'XYZTestCallback', data:null})
+myApp.getWithCallback ('/cbtest/', function (req, res) {
+	res.render (myApp.template, myApp.templateVars);
+});
+
+
 // test write
 //myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 //myApp.getDataWithParams ('/write/:relation', 'INSERT INTO $1::text(name) values($2::text)');
