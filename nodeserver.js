@@ -24,9 +24,13 @@ myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.getDataWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
 // test simple get that gives me a chance to callback for render, params
-myApp.setTemplate ('jessica', {title: 'XYZTestCallback', data:null})
-myApp.getWithCallback ('/cbtest/', function (req, res) {
-	res.render (myApp.template, myApp.templateVars);
+myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
+myApp.getWithCallback ('/cbtest/:relationName', function (req, res) {
+	var tableName = req.params.relationName;
+	db.query ('SELECT * FROM $1::text', [tableName], function (output) {
+		myApp.templateVars.data = output.rows;
+		res.render (myApp.template, myApp.templateVars);
+	});
 });
 
 
