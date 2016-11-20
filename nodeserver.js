@@ -1,46 +1,60 @@
-// our custom app and db prototype wrapped around express and pgclient
+// Custom app and db prototype built around express and pgclient
 var expressHugger = require ('./scriptapp');
 var appDB = require ('./scriptdb');
 
-// test setting up app instance
+// Set up app instance
 var db = new appDB.PgClient();
 var myApp = new expressHugger.App();
 myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
-// test simple get
+
+// Example rendering page
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations', data: null });
 myApp.get ('/');
 
-// test database query load to page - "data" key added from query in getWithData
+// Example querying and rendering page - "data" key added in getWithData
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.getData ('/jessica/', 'SELECT * FROM location');
 
-// test get data as js object
+// Example getting data as js object
 myApp.getJSON ('SELECT * FROM location');
 
-// test load data from url params
+// Example loading data from url params
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.getDataWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
-// test simple get that gives me a chance to callback for render, params
+// Example custom callback - basic variant
 myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
-myApp.getWithCallback ('/cbtest/:relationName', function (req, res) {
-	var tableName = req.params.relationName;
-	db.query ('SELECT * FROM $1::text', [tableName], function (output) {
+myApp.getWithCallback ('/cbtest/locations/', function (req, res) {
+	db.query ('SELECT * FROM location', [], function (output) {
 		myApp.templateVars.data = output.rows;
 		res.render (myApp.template, myApp.templateVars);
 	});
 });
 
+// Example custom callback - variant parsing uri param and passing to query
+myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
+myApp.getWithCallback ('/cbtest/location/:locID/', function (req, res) {
+	var id = req.params.locID;
+	db.query ('SELECT * FROM location WHERE id=$1::int', [id], function (output) {
+		myApp.templateVars.data = output.rows;
+		res.render (myApp.template, myApp.templateVars);
+	});
+});
 
-// test write
-//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-//myApp.getDataWithParams ('/write/:relation', 'INSERT INTO $1::text(name) values($2::text)');
+// Example custom callback - variant writing to the database
+myApp.getWithCallback ('/cbtest/:relation/:newEntry/', function (req, res) {
+	var table = req.params.relation;
+	var entry = req.params.newEntry;
+	db.query ('INSERT INTO $1::text(name) values($2::text)', [table, entry], function (output) {
+		res.end ("Successfully inserted " + entry + " into " + table + ".");
+	});
+});
 
-// test delete
-//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-//myApp.getDataWithParams ('/wipe/:relation', 'DELETE * FROM location');
+// Example delete all from table
+myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+myApp.getDataWithParams ('/location/wipe', 'DELETE * FROM location');
 
 myApp.listen (8080);
 
