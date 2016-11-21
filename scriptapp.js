@@ -32,18 +32,19 @@ App.prototype.setTemplate = function (template, templateVars) {
 	}
 }
 
-App.prototype.get = function (route) {
-	// simple get using rendered template and passed in template variables object
-	var template = this.template;
-	var templateVars = this.templateVars;
-	// express app get and render
-	this.app.get (route, function (req, res) {
-		res.setHeader ('Content-Type', 'text/html');
-		res.render (template, templateVars);
-	});
-}
+// // Old basic GET function merged into new .get that also handles query and params
+// App.prototype.get = function (route) {
+// 	// simple get using rendered template and passed in template variables object
+// 	var template = this.template;
+// 	var templateVars = this.templateVars;
+// 	// express app get and render
+// 	this.app.get (route, function (req, res) {
+// 		res.setHeader ('Content-Type', 'text/html');
+// 		res.render (template, templateVars);
+// 	});
+// }
 
-App.prototype.getData = function (route, query, queryArgs) {
+App.prototype.get = function (route, query, useUrlParams, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
 	 * 	  - uses current app template and templateVars to render
@@ -56,24 +57,33 @@ App.prototype.getData = function (route, query, queryArgs) {
 	var client = this.db;
 
 	// run the simple get method instead if there's no query
-	if (query === undefined) this.get (route);
+	if (route === undefined) throw "ERROR: route missing when calling App.get";
 
 	// express app get method
 	this.app.get (route, function (req, res) {
 		res.setHeader('Content-Type', 'text/html');
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
-		// my method for querying - pass callback to render once query is done
-		client.query (query, queryArgs, function (output) {
-			// add data to template variables
-			templateVars.data = output.rows;
-			// render page since db query is done and output parsed
-			res.render (template, templateVars);
-		});
-	})
+		if (query != undefined) {
+			// pull params from route and use in sequence for query string interpolation
+			if (useUrlParams) {
+				for (pindex in req.params) {
+					qArgs.push (req.params[pindex]);
+				}
+			}
+			// my method for querying - pass callback to render once query is done
+			client.query (query, queryArgs, function (output) {
+				// add data to template variables
+				templateVars.data = output.rows;
+				res.render (template, templateVars);
+			});
+		}
+		// render page once db query is done and output parsed
+		res.render (template, templateVars);
+	});	
 }
 
-App.prototype.getDataWithParams = function (route, query) {
+App.prototype.getWithParams = function (route, query) {
 	// this is a duplicate of .getData with one addition:
 	//   - pull out uri params and interpolate them into the query
 	var template = this.template;
@@ -87,7 +97,6 @@ App.prototype.getDataWithParams = function (route, query) {
 		// store uri params to insert into query
 		var qArgs = [];
 		for (pindex in req.params) {
-			console.log(req.params[pindex]);
 			qArgs.push (req.params[pindex]);
 		}
 		// use those qArgs to interpolate into sql query and render page
