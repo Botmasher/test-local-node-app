@@ -57,7 +57,7 @@ App.prototype.get = function (route, query, useUrlParams, queryArgs) {
 	var client = this.db;
 
 	// run the simple get method instead if there's no query
-	if (route === undefined) throw "ERROR: route missing when calling App.get";
+	//if (route === undefined) throw "ERROR: route missing when calling App.get";
 
 	// express app get method
 	this.app.get (route, function (req, res) {
@@ -66,7 +66,7 @@ App.prototype.get = function (route, query, useUrlParams, queryArgs) {
 		if (queryArgs === undefined) queryArgs = [];
 		if (query != undefined) {
 			// pull params from route and use in sequence for query string interpolation
-			if (useUrlParams) {
+			if (useUrlParams != undefined && useUrlParams) {
 				for (pindex in req.params) {
 					qArgs.push (req.params[pindex]);
 				}
