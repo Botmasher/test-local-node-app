@@ -15,14 +15,14 @@ myApp.get ('/');
 
 // Example querying and rendering page - "data" key added in getWithData
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.get ('/jessica/', 'SELECT * FROM location', false);
+myApp.get ('/jessica/', 'SELECT * FROM location');
 
 // Example getting data as js object
 myApp.getJSON ('SELECT * FROM location');
 
 // Example loading data from url params
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.get ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text', true);
+myApp.getWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
 // Example custom callback - basic variant
 myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
@@ -59,7 +59,7 @@ myApp.app.get ('/countParams', function (req, res) {
 
 // Example delete all from table
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.get ('/location/wipe', 'DELETE * FROM location', false);
+myApp.get ('/location/wipe', 'DELETE * FROM location');
 
 myApp.listen (8080);
 
