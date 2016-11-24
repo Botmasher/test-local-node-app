@@ -63,7 +63,7 @@ App.prototype.get = function (route, query, queryArgs) {
 		res.setHeader ('Content-Type', 'text/html');
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
-		if (query != undefined) {
+		if (query !== undefined) {
 			// my method for querying - pass callback to render once query is done
 			client.query (query, queryArgs, function (output) {
 				// add data to template variables
@@ -97,13 +97,6 @@ App.prototype.getWithParams = function (route, query) {
 			templateVars.data = output.rows;
 			res.render (template, templateVars);
 		});
-	});
-}
-
-App.prototype.getWithCallback = function (route, callback) {
-	this.app.get(route, function (req,res) {
-		res.setHeader ('Content-Type', 'text/html');
-		callback (req, res);
 	});
 }
 
