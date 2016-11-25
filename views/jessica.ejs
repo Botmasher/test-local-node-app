@@ -10,3 +10,9 @@
 	<li><%= data[i].name %></li>
 <% } %>
 </ul>
+
+<!-- Test including partial and setting a variable passed to it -->
+<% var calledAgain = false %>
+<%- include footer %>
+<% calledAgain = true %>
+<%- include footer %>
