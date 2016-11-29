@@ -1,9 +1,7 @@
-<% var appTitle = "App Title Text" %>
-<% var appSubtitle = "App Subtitle Text" %>
-<% var appLogoImg = "https://pbs.twimg.com/profile_images/551428167760486404/DMyfmQDA.jpeg" %>
+<% var appInfo = { title: "App Title Text", subtitle: "App Subtitle Text", image: "https://pbs.twimg.com/profile_images/551428167760486404/DMyfmQDA.jpeg" %>
 
 <div id = "logo">
-	<img src = <%= appLogoImg %> >
-	<h1><%= appTitle %></h1>
-	<h2><%= appSubtitle %></h2>
+	<img src = <%= appInfo.image %> ALT = "Orangutan Palm Oil Pain logo">
+	<h1><%= appInfo.title %></h1>
+	<h2><%= appInfo.subtitle %></h2>
 </div>
