@@ -9,15 +9,15 @@ myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
 
-// Example rendering page
+// Example querying and rendering page - "data" key added in getWithData
+myApp.setTemplate ('body', { content: 'locationsList', title: 'Locations' });
+myApp.get ('/', 'SELECT * FROM location');
+
+// Example get and render page
 // I included a "data" key because this template expects it.
 // the .get method will insert that key if you include query param after route 
 myApp.setTemplate ('jessica', { title: 'Palm Oil Locations', data: null });
-myApp.get ('/');
-
-// Example querying and rendering page - "data" key added in getWithData
-myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.get ('/jessica/', 'SELECT * FROM location');
+myApp.get ('/jessica/');
 
 // Example getting data as js object
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
