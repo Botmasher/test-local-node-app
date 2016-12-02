@@ -25,11 +25,8 @@ App.prototype.setTemplate = function (template, templateVars) {
 	// set the template for the next view render
 	this.template = template;
 	// template variables optional
-	if (templateVars === undefined) {
-		this.templateVars = {}
-	} else {
-		this.templateVars = templateVars;
-	}
+	//if (this.templateVars === undefined) this.templateVars = {};
+	if (templateVars !== undefined) this.templateVars = templateVars;
 }
 
 // // Old basic GET function merged into new .get that also handles query and params
