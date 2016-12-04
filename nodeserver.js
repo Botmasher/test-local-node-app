@@ -10,8 +10,7 @@ myApp.setDatabase(db);
 
 
 // Example querying and rendering page - "data" key added in getWithData
-//myApp.setTemplate ('body', { content: 'locationsList', title: 'Locations' });
-myApp.setTemplate ('body', { partials: { header: 'header', logo: 'logo', body: 'locationsList', footer: 'footer' }, title: 'Locations' });
+myApp.setTemplate ('body', { body: 'body', pageTitle: 'title to display in browser', title: 'Palm Oil Locations' });
 myApp.get ('/', 'SELECT * FROM location');
 
 // Example get and render page

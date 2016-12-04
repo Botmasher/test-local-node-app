@@ -1,7 +1,13 @@
-<% include partials.header %>
+<% include vars %>
 
-<% include partials.logo %>
+<% include header %>
 
-<% include partials.body %>
+<% include logo %>
 
-<% include partials.footer %>
+<% if (body == "body") { %>
+	<% include body %>
+<% } else if (body == "locationsList") { %>
+	<% include body-locationsList %>
+<% } %>
+
+<% include footer %>
