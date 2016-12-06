@@ -11,7 +11,12 @@ myApp.setDatabase(db);
 
 // Example querying and rendering page - "data" key added in getWithData
 myApp.setTemplate ('body', { body: 'body', pageTitle: 'title to display in browser', title: 'Palm Oil Locations' });
-myApp.get ('/', 'SELECT * FROM location');
+myApp.app.get ('/stringTest/locations/', function (req, res) {
+	db.query ('SELECT * FROM location', [], function (o) {
+		myApp.templateVars.data = o.rows;
+		res.render (myApp.template, myApp.templateVars);
+	});
+});
 
 // Example get and render page
 // I included a "data" key because this template expects it.

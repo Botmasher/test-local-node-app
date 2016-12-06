@@ -1,4 +1,4 @@
-<% if (calledAgain) { %>
+<% if (calledAgain !== undefined && calledAgain) { %>
 	<p>And <em>another test footer</em> from the exact same file!</p>
 <% } else { %>
 	<p>This is a <em>test footer</em>. It is included via another ejs template.</p>
