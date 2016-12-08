@@ -1,0 +1,23 @@
+<% include vars %>
+
+<% include header %>
+
+<% include logo %>
+
+<p>REACHED MAIN!</p>
+<% // include body view %>
+<% if (body == "default") { %>
+	<p>basic body text here</p>
+	<p>Body tags are in header.ejs (open) and footer.ejs (close).</p>
+	<p>The structure of a basic page with my .ejs files is:</p>
+	<ol><li>header</li><li>logo</li><li>body</li><li>footer</li></ol>
+	<p>I also have a vars.ejs for appwide view vars.</p>
+<% } else if (body == "locationsList") { %>
+	<% include body-locationsList %>
+<% } else if (body == "jessica") { %>
+	<% include jessica %>
+<% } else { %>
+	<p>This page was not found. No valid body template passed in at this route.</p>
+<% } %>
+
+<% include footer %>

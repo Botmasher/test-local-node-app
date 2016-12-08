@@ -3,6 +3,8 @@ var App = function () {
 	// routing and templating Express app
 	var expressApp = require('express');
 	this.app = expressApp();
+	this.template = null;
+	this.templateVars = {};
 }
 
 App.prototype.listen = function (port) {
@@ -26,7 +28,7 @@ App.prototype.setTemplate = function (template, templateVars) {
 	this.template = template;
 	// template variables optional
 	//if (this.templateVars === undefined) this.templateVars = {};
-	if (templateVars !== undefined) this.templateVars = templateVars;
+	this.templateVars = templateVars;
 }
 
 // // Old basic GET function merged into new .get that also handles query and params
