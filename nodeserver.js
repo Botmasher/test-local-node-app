@@ -9,9 +9,16 @@ myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
 
-// Example querying and rendering page - "data" key added in getWithData
+// Example querying and rendering page - "data" key added on query end
 myApp.setTemplate ('main', { body: 'default', pageTitle: 'title to display in browser', title: 'Palm Oil Locations' });
 myApp.app.get ('/', function (req, res) {
+	myApp.template = 'jessica';
+	myApp.templateVars = {
+		body: 'default',
+		pageTitle: 'title to display in browser',
+		title: 'Palm Oil locations',
+		data: null
+	};
 	db.query ('SELECT * FROM location', [], function (o) {
 		myApp.templateVars.data = o.rows;
 		res.render (myApp.template, myApp.templateVars);
