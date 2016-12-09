@@ -12,10 +12,9 @@ myApp.setDatabase(db);
 // Example querying and rendering page - "data" key added on query end
 myApp.setTemplate ('main', { body: 'default', pageTitle: 'title to display in browser', title: 'Palm Oil Locations' });
 myApp.app.get ('/', function (req, res) {
-	myApp.template = 'jessica';
+	myApp.template = 'main';
 	myApp.templateVars = {
-		body: 'default',
-		pageTitle: 'title to display in browser',
+		body: 'jessica',
 		title: 'Palm Oil locations',
 		data: null
 	};

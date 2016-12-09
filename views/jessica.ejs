@@ -10,9 +10,3 @@
 	<li><%= data[i].name %></li>
 <% } %>
 </ul>
-
-<% // Test including partial and setting a variable passed to it %>
-<% // It's repeated because footer already included once in %>
-<% // main template, which includes this file as a body if requested %>
-<% calledAgain = true %>
-<%- include footer %>
