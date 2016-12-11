@@ -8,31 +8,22 @@
 <p>REACHED MAIN!</p>
 
 <% // include body view %>
-
-<% switch (body) { %>
-	<% case "default": %>
-		<p>Default body text.</p>
-		<p>Body tags in header.ejs (open) & footer.ejs (close).</p>
-		<p>The structure of our basic main .ejs template:</p>
-		<ol>
-			<li>header</li>
-			<li>logo</li>
-			<li>body</li>
-			<li>footer</li>
-		</ol>
-		<% break %>
-
-	<% case "locationsList": %>
-		<% include body-locationsList %>
-		<% break %>
-
-	<% case "jessica": %>
-		<% include jessica %>
-		<% break %>
-
-	<% default: %>
-		<p>Page not found. No valid template passed into route.</p>
-
+<% if (body == "default") { %>
+	<p>Default body text.</p>
+	<p>Body tags in header.ejs (open) & footer.ejs (close).</p>
+	<p>The structure of our basic main .ejs template:</p>
+	<ol>
+		<li>header</li>
+		<li>logo</li>
+		<li>body</li>
+		<li>footer</li>
+	</ol>
+<% } else if (body == "locationsList") { %>
+	<%- include body-locationsList %>
+<% } else if (body == "jessica") { %>
+	<%- include jessica %>
+<% } else { %>
+	<p>Page not found. No valid template passed into route.</p>
 <% } %>
 
 <%- include footer %>

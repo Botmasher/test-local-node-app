@@ -9,12 +9,13 @@ myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
 
-// Example querying and rendering page - "data" key added on query end
-myApp.setTemplate ('main', { body: 'default', pageTitle: 'title to display in browser', title: 'Palm Oil Locations' });
+// Example querying and rendering page
+// - USE THIS ONE to set template and templateVars for an endpoint
+// - "data" key added on query end (db.query through above var db)
 myApp.app.get ('/', function (req, res) {
 	myApp.template = 'main';
 	myApp.templateVars = {
-		body: 'jessica',
+		body: 'default',
 		title: 'Palm Oil locations',
 		data: null
 	};
