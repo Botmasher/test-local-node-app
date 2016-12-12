@@ -26,10 +26,18 @@ myApp.app.get ('/', function (req, res) {
 });
 
 // Example get and render page
-// I included a "data" key because this template expects it.
-// the .get method will insert that key if you include query param after route 
-myApp.setTemplate ('jessica', { title: 'Palm Oil Locations', data: null });
-myApp.get ('/jessica/');
+// The diffs btwn this and above:
+// 	- just renders page, no query
+//  - no "data" key to add to templateVars, bc
+//  - "jessica" body template does not iterate over data to display
+myApp.app.get ('/jessica/', function (req, res) {
+	myApp.template = 'main',
+	myApp.templateVars = {
+		body: 'jessica',
+		title: 'Jessica\'s List of Palm Oil Locations'
+	};
+	res.render (myApp.template, myApp.templateVars);
+});
 
 // Example getting data as js object
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
