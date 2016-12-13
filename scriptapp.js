@@ -3,8 +3,7 @@ var App = function () {
 	// routing and templating Express app
 	var expressApp = require('express');
 	this.app = expressApp();
-	this.template = null;
-	this.templateVars = {};
+	this.mainTemplate = null;
 }
 
 App.prototype.listen = function (port) {
@@ -23,36 +22,20 @@ App.prototype.setViews = function (viewsDirectory, viewEngine) {
 	this.app.set ('view engine', viewEngine);
 }
 
-App.prototype.setTemplate = function (template, templateVars) {
+App.prototype.setMainTemplate = function (template) {
 	// set the template for the next view render
-	this.template = template;
-	// template variables optional
-	//if (this.templateVars === undefined) this.templateVars = {};
-	this.templateVars = templateVars;
+	this.mainTemplate = template;
 }
 
-// // Old basic GET function merged into new .get that also handles query and params
-// App.prototype.get = function (route) {
-// 	// simple get using rendered template and passed in template variables object
-// 	var template = this.template;
-// 	var templateVars = this.templateVars;
-// 	// express app get and render
-// 	this.app.get (route, function (req, res) {
-// 		res.setHeader ('Content-Type', 'text/html');
-// 		res.render (template, templateVars);
-// 	});
-// }
-
-App.prototype.get = function (route, query, queryArgs) {
+App.prototype.get = function (route, templateVars, query, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
 	 * 	  - uses current app template and templateVars to render
 	 * 	  - takes query and string interpolation args expected by pg query
 	 */
 	
-	// store db and template info for querying and building template
-	var template = this.template;
-	var templateVars = this.templateVars;
+	// store db and main template for querying and building template
+	var mainTemplate = this.mainTemplate;
 	var client = this.db;
 
 	//if (route === undefined) throw "ERROR: route missing when calling App.get";
@@ -70,7 +53,7 @@ App.prototype.get = function (route, query, queryArgs) {
 			});
 		}
 		// render page once db query is done and output parsed
-		res.render (template, templateVars);
+		res.render (mainTemplate, templateVars);
 	});	
 }
 

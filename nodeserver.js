@@ -9,11 +9,14 @@ myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
 
-// Example querying and rendering page
+// set scaffolding template that we'll pass different "body" keys
+myApp.setMainTemplate ('main');
+
+
+// Example get/query/render using the Express app .get method
 // - USE THIS ONE to set template and templateVars for an endpoint
 // - "data" key added on query end (db.query through above var db)
 myApp.app.get ('/', function (req, res) {
-	myApp.template = 'main';
 	myApp.templateVars = {
 		body: 'default',
 		title: 'Palm Oil locations',
@@ -25,19 +28,20 @@ myApp.app.get ('/', function (req, res) {
 	});
 });
 
-// Example get and render page
-// The diffs btwn this and above:
-// 	- just renders page, no query
-//  - no "data" key to add to templateVars, bc
-//  - "jessica" body template does not iterate over data to display
-myApp.app.get ('/jessica/', function (req, res) {
-	myApp.template = 'main',
-	myApp.templateVars = {
-		body: 'jessica',
-		title: 'Jessica\'s List of Palm Oil Locations'
-	};
-	res.render (myApp.template, myApp.templateVars);
+// Example get and render page using our scriptapp .get method
+//  - the method checks for undefined query and query string args
+// 	- this version calls it for a simple render 
+myApp.get ('/jessica/', {
+	body: 'jessica',
+	title: 'Jessica\'s List of Palm Oil Locations'
 });
+
+// Example get/query/render using our own scriptapp .get method
+// 	- "data" key added to templateVars because passed in a query
+myApp.get ('/addSomeData/', {
+	body: 'body-locationsList',
+	title: 'Jessica\'s List of Palm Oil Locations'
+}, 'SELECT * FROM location');
 
 // Example getting data as js object
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
