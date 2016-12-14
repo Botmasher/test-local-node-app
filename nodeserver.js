@@ -14,17 +14,15 @@ myApp.setMainTemplate ('main');
 
 
 // Example get/query/render using the Express app .get method
-// - USE THIS ONE to set template and templateVars for an endpoint
-// - "data" key added on query end (db.query through above var db)
+// - set template and templateVars for an endpoint
+// - add "data" key on query end
 myApp.app.get ('/', function (req, res) {
 	myApp.templateVars = {
-		body: 'default',
-		title: 'Palm Oil locations',
-		data: null
+		body: 'default'
 	};
 	db.query ('SELECT * FROM location', [], function (o) {
 		myApp.templateVars.data = o.rows;
-		res.render (myApp.template, myApp.templateVars);
+		res.render (myApp.mainTemplate, myApp.templateVars);
 	});
 });
 
@@ -39,7 +37,7 @@ myApp.get ('/jessica/', {
 // Example get/query/render using our own scriptapp .get method
 // 	- "data" key added to templateVars because passed in a query
 myApp.get ('/addSomeData/', {
-	body: 'body-locationsList',
+	body: 'body-list',
 	title: 'Jessica\'s List of Palm Oil Locations'
 }, 'SELECT * FROM location');
 
@@ -47,25 +45,26 @@ myApp.get ('/addSomeData/', {
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
 
 // Example loading data from url params
-myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.getWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
 
 // Example custom callback - basic variant
-myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
+//myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
 myApp.app.get ('/stringTest/locations/', function (req, res) {
+	myApp.templateVars = { body: 'body-list', title: 'Locations' };
 	db.query ('SELECT * FROM location', [], function (output) {
 		myApp.templateVars.data = output.rows;
-		res.render (myApp.template, myApp.templateVars);
+		res.render (myApp.mainTemplate, myApp.templateVars);
 	});
 });
 
 // Example custom callback - variant parsing uri param and passing to query
-myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
+//myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
 myApp.app.get ('/qinterpolationTest/location/:locID/', function (req, res) {
 	var id = req.params.locID;
 	db.query ('SELECT * FROM location WHERE id=$1::int', [id], function (output) {
 		myApp.templateVars.data = output.rows;
-		res.render (myApp.template, myApp.templateVars);
+		res.render (myApp.mainTemplate, myApp.templateVars);
 	});
 });
 
@@ -78,7 +77,7 @@ myApp.app.get ('/insertTest/location/:newLocationEntry/', function (req, res) {
 });
 
 // ?broken? - Example delete all from table
-myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
+//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
 myApp.get ('/location/wipe', 'DELETE * FROM location');
 
 myApp.listen (8080);
