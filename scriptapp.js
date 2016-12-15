@@ -57,11 +57,10 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 	});	
 }
 
-App.prototype.getWithParams = function (route, query) {
+App.prototype.getWithParams = function (route, templateVars, query) {
 	// this is a duplicate of .getData with one addition:
 	//   - pull out uri params and interpolate them into the query
-	var template = this.template;
-	var templateVars = this.templateVars;
+	var mainTemplate = this.mainTemplate;
 	var client = this.db;
 
 	if (query === undefined) this.get (route);
@@ -77,7 +76,7 @@ App.prototype.getWithParams = function (route, query) {
 		// use those qArgs to interpolate into sql query and render page
 		client.query (query, qArgs, function (output) {
 			templateVars.data = output.rows;
-			res.render (template, templateVars);
+			res.render (mainTemplate, templateVars);
 		});
 	});
 }

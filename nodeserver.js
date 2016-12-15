@@ -45,8 +45,10 @@ myApp.get ('/addSomeData/', {
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
 
 // Example loading data from url params
-//myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.getWithParams ('/location/:locName/', 'SELECT * FROM location WHERE name=$1::text');
+myApp.getWithParams ('/location/:locName/', {
+	body: 'body-list',
+	title: 'Some Title'
+}, 'SELECT * FROM location WHERE name=$1::text');
 
 // Example custom callback - basic variant
 //myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
