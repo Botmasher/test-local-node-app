@@ -45,6 +45,7 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 		res.setHeader ('Content-Type', 'text/html');
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
+		
 		if (query !== undefined) {
 			// my method for querying - pass callback to render once query is done
 			client.query (query, queryArgs, function (output) {
@@ -69,10 +70,12 @@ App.prototype.getWithParams = function (route, templateVars, query) {
 	this.app.get (route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/html');
 		// store uri params to insert into query
-		var qArgs = [];
-		for (pindex in req.params) {
-			qArgs.push (req.params[pindex]);
-		}
+		// var qArgs = [];
+		// for (pindex in req.params) {
+		// 	qArgs.push (req.params[pindex]);
+		// }
+		if (req.params !== undefined && req.params != []) qArgs = req.params;
+		
 		// use those qArgs to interpolate into sql query and render page
 		client.query (query, qArgs, function (output) {
 			templateVars.data = output.rows;
