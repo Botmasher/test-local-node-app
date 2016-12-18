@@ -58,6 +58,30 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 	});	
 }
 
+App.prototype.testDetectParams = function (route) {
+	/*
+	 * 	Given an express endpoint, detect variable names
+	 */
+	var word = ""; 			// building current route variable
+	var routeVars = []; 	// list of route variables
+	var isVar = false; 		// currently reading a route variable?
+
+	// split the route variables out into their own list
+	for (char in route) {
+		if (isVar) word = word + route[char];
+		if (route[char] == ":") {
+			isVar = true;
+			word = "";
+		} else if (route[char] == "/" && isVar) {
+			routeVars.push (word);
+			isVar = false;
+		}
+	}
+
+	// return the list of route variables
+	return routeVars;
+}
+
 App.prototype.getWithParams = function (route, templateVars, query) {
 	// this is a duplicate of .getData with one addition:
 	//   - pull out uri params and interpolate them into the query
