@@ -60,7 +60,7 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 
 App.prototype.testDetectParams = function (route) {
 	/*
-	 * 	Given an express endpoint, detect variable names
+	 * 	Given an express endpoint, detect and list variable names
 	 */
 	var word = ""; 			// building current route variable
 	var routeVars = []; 	// list of route variables
@@ -72,7 +72,7 @@ App.prototype.testDetectParams = function (route) {
 		if (route[char] == ":") {
 			isVar = true;
 			word = "";
-		} else if (route[char] == "/" && isVar) {
+		} else if (isVar && !/a-zA-Z0-9\-\_{1}/g.test(route[char]) ) {
 			routeVars.push (word);
 			isVar = false;
 		}
@@ -81,6 +81,11 @@ App.prototype.testDetectParams = function (route) {
 	// return the list of route variables
 	return routeVars;
 }
+
+/* Given list of strings, turn them into valid variable names.
+ * - Initialize them here too?
+ */
+
 
 App.prototype.getWithParams = function (route, templateVars, query) {
 	// this is a duplicate of .getData with one addition:

@@ -13,6 +13,14 @@ myApp.setDatabase(db);
 myApp.setMainTemplate ('main');
 
 
+// test detecting params in uri
+var paramsList = myApp.testDetectParams('/myroute/:someVar1/:var2/');
+console.log (paramsList);
+for (p in paramsList) {
+	console.log (paramsList[p]);
+}
+
+
 // Example get/query/render using the Express app .get method
 // - set template and templateVars for an endpoint
 // - add "data" key on query end
