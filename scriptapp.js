@@ -58,34 +58,32 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 	});	
 }
 
-App.prototype.testDetectParams = function (route) {
+App.prototype.arrangeParams = function (query) {
 	/*
-	 * 	Given an express endpoint, detect and list variable names
+	 *	Pull out list of variable index integers from query
+	 * 	 - source vars have the format $INT::TYPE, e.g. $0::text
+	 * 	 - return the list of integers in the order they appear
+	 * 	 - can be used to reconstruct location of string arguments
 	 */
-	var word = ""; 			// building current route variable
-	var routeVars = []; 	// list of route variables
-	var isVar = false; 		// currently reading a route variable?
-
-	// split the route variables out into their own list
-	for (char in route) {
-		if (isVar) word = word + route[char];
-		if (route[char] == ":") {
-			isVar = true;
-			word = "";
-		} else if (isVar && !/a-zA-Z0-9\-\_{1}/g.test(route[char]) ) {
-			routeVars.push (word);
-			isVar = false;
+	var parsing = false;
+	var queryInts = [];
+	newInt = '';
+	for (char in query) {
+		if (parsing && query[char] == ':') {
+			parsing = false;
+			newInt = '';
+			queryInts.push(newInt);
+		} else if (parsing && /0-9/g.test(query[char]) ) {
+			newInt = newInt + query[char];
+		} else if (query[char] == '$') {
+			parsing = true;
 		}
 	}
-
-	// return the list of route variables
-	return routeVars;
+	for (i in queryInts) {
+		queryInts[i] = parseInt(queryInts[i]);
+	}
+	return queryInts;
 }
-
-/* Given list of strings, turn them into valid variable names.
- * - Initialize them here too?
- */
-
 
 App.prototype.getWithParams = function (route, templateVars, query) {
 	// this is a duplicate of .getData with one addition:
