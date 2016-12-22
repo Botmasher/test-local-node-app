@@ -31,7 +31,8 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
 	 * 	  - uses current app template and templateVars to render
-	 * 	  - takes query and string interpolation args expected by pg query
+	 * 	  - takes query and string interp args expected by pg query
+	 * 	  - set queryArgs=true to use URI params to fill query args
 	 */
 	
 	// store db and main template for querying and building template
@@ -45,7 +46,20 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 		res.setHeader ('Content-Type', 'text/html');
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
-		
+		if (queryArgs == true) queryArgs = req.params;
+
+		// use an object to replace just specific param args
+		// e.g. { 0: 'location', 1: 'Hilo' } => ''
+		if (typeof queryArgs === 'object') {
+			newArgsList = req.params;
+			for (index in queryArgs) {
+				newArgsList[index] = queryArgs[index];
+			}
+			// TODO: remove NULL entries, e.g. delete 0th if {0:null}
+			// set the query args to the built list
+			queryArgs = newArgsIndex;
+		};
+
 		if (query !== undefined) {
 			// my method for querying - pass callback to render once query is done
 			client.query (query, queryArgs, function (output) {
@@ -56,33 +70,6 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 		// render page once db query is done and output parsed
 		res.render (mainTemplate, templateVars);
 	});	
-}
-
-App.prototype.arrangeParams = function (query) {
-	/*
-	 *	Pull out list of variable index integers from query
-	 * 	 - source vars have the format $INT::TYPE, e.g. $0::text
-	 * 	 - return the list of integers in the order they appear
-	 * 	 - can be used to reconstruct location of string arguments
-	 */
-	var parsing = false;
-	var queryInts = [];
-	newInt = '';
-	for (char in query) {
-		if (parsing && query[char] == ':') {
-			parsing = false;
-			newInt = '';
-			queryInts.push(newInt);
-		} else if (parsing && /0-9/g.test(query[char]) ) {
-			newInt = newInt + query[char];
-		} else if (query[char] == '$') {
-			parsing = true;
-		}
-	}
-	for (i in queryInts) {
-		queryInts[i] = parseInt(queryInts[i]);
-	}
-	return queryInts;
 }
 
 App.prototype.getWithParams = function (route, templateVars, query) {

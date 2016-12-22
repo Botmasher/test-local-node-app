@@ -14,11 +14,11 @@ myApp.setMainTemplate ('main');
 
 
 // test detecting params in uri
-var paramsList = myApp.testDetectParams('/myroute/:someVar1/:var2/');
-console.log (paramsList);
-for (p in paramsList) {
-	console.log (paramsList[p]);
-}
+//var paramsList = myApp.testDetectParams('/myroute/:someVar1/:var2/');
+//console.log (paramsList);
+//for (p in paramsList) {
+//	console.log (paramsList[p]);
+//}
 
 
 // Example get/query/render using the Express app .get method
@@ -44,16 +44,22 @@ myApp.get ('/jessica/', {
 
 // Example get/query/render using our own scriptapp .get method
 // 	- "data" key added to templateVars because passed in a query
-myApp.get ('/addSomeData/', {
+myApp.get ('/locationTest1/:name', {
 	body: 'body-list',
 	title: 'Jessica\'s List of Palm Oil Locations'
-}, 'SELECT * FROM location');
+}, 'SELECT * FROM location WHERE name=:$1::text', true);
+
+// same as above BUT pass in object to replace specific interpolation vars
+// myApp.get ('/locationTest1/:name', {
+// 	body: 'body-list',
+// 	title: 'Jessica\'s List of Palm Oil Locations'
+// }, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
 
 // Example getting data as js object
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
 
 // Example loading data from url params
-myApp.getWithParams ('/location/:locName/', {
+myApp.getWithParams ('/locationTest2/:locName/', {
 	body: 'body-list',
 	title: 'Some Title'
 }, 'SELECT * FROM location WHERE name=$1::text');
