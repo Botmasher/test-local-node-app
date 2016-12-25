@@ -48,12 +48,21 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 		if (queryArgs === undefined) queryArgs = [];
 		if (queryArgs == true) queryArgs = req.params;
 
+		// use integers to reorder query params
+		if (typeof queryArgs[0] === 'number') {
+			var newArgsList = req.params;
+			for (var i = 0; i < newArgsList.length; i++) {
+				newArgsList[i] = req.params[newArgsList[i]];
+			}
+			queryArgs = newArgsList;
+		}
+
 		// use an object to replace just specific param args
 		// e.g. given { 0: 'location', 1: 'Hilo' }
 		// "'loc', 'city', 'state'" => "'location', 'Hilo', 'state'"
 		// or do not use a specific query arg if index : null
 		if (typeof queryArgs === 'object') {
-			newArgsList = req.params;
+			var newArgsList = req.params;
 			// include custom parameters in final query args
 			for (var i = req.params.length-1; i >= 0; i--) {
 				if  (queryArgs[i] !== undefined) {
@@ -63,7 +72,7 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 				}
 				// if queryArgs value is null, don't use the param
 			}
-			queryArgs = newArgsIndex;
+			queryArgs = newArgsList;
 		};
 
 		if (query !== undefined) {

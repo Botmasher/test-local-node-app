@@ -47,7 +47,10 @@ myApp.get ('/jessica/', {
 myApp.get ('/locationTest1/:name', {
 	body: 'body-list',
 	title: 'Jessica\'s List of Palm Oil Locations'
-}, 'SELECT * FROM location WHERE name=:$1::text', true);
+}, 'SELECT * FROM location WHERE name=$1::text', true);
+
+// pass in integer list to reorder query params
+myApp.get ('/location/:entryName/:index/', [1,0], 'SELECT * FROM location WHERE name=$1::text AND index=$2::int', true)
 
 // same as above BUT pass in object to replace specific interpolation vars
 // myApp.get ('/locationTest1/:name', {
