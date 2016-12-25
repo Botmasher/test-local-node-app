@@ -12,15 +12,6 @@ myApp.setDatabase(db);
 // set scaffolding template that we'll pass different "body" keys
 myApp.setMainTemplate ('main');
 
-
-// test detecting params in uri
-//var paramsList = myApp.testDetectParams('/myroute/:someVar1/:var2/');
-//console.log (paramsList);
-//for (p in paramsList) {
-//	console.log (paramsList[p]);
-//}
-
-
 // Example get/query/render using the Express app .get method
 // - set template and templateVars for an endpoint
 // - add "data" key on query end
@@ -39,24 +30,24 @@ myApp.app.get ('/', function (req, res) {
 // 	- this version calls it for a simple render 
 myApp.get ('/jessica/', {
 	body: 'jessica',
-	title: 'Jessica\'s List of Palm Oil Locations'
+	title: 'My List of Palm Oil Locations'
 });
 
 // Example get/query/render using our own scriptapp .get method
 // 	- "data" key added to templateVars because passed in a query
 myApp.get ('/locationTest1/:name', {
 	body: 'body-list',
-	title: 'Jessica\'s List of Palm Oil Locations'
+	title: 'Another List of Palm Oil Locations'
 }, 'SELECT * FROM location WHERE name=$1::text', true);
 
-// pass in integer list to reorder query params
-myApp.get ('/location/:entryName/:index/', [1,0], 'SELECT * FROM location WHERE name=$1::text AND index=$2::int', true)
+// same as above but pass in object to replace specific query vars
+myApp.get ('/locationTest1/:name', {
+	body: 'body-list',
+	title: 'Another List of Palm Oil Locations'
+}, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
 
-// same as above BUT pass in object to replace specific interpolation vars
-// myApp.get ('/locationTest1/:name', {
-// 	body: 'body-list',
-// 	title: 'Jessica\'s List of Palm Oil Locations'
-// }, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
+// same as above but pass in integer list to reorder query params
+myApp.get ('/location/:entryName/:index/', [1,0], 'SELECT * FROM location WHERE name=$1::text AND index=$2::int', true)
 
 // Example getting data as js object
 myApp.getJSON ('/JSON/', 'SELECT * FROM location');
@@ -67,7 +58,7 @@ myApp.getWithParams ('/locationTest2/:locName/', {
 	title: 'Some Title'
 }, 'SELECT * FROM location WHERE name=$1::text');
 
-// Example custom callback - basic variant
+// Example callback - basic variant using the js framework .get
 //myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
 myApp.app.get ('/stringTest/locations/', function (req, res) {
 	myApp.templateVars = { body: 'body-list', title: 'Locations' };
@@ -78,7 +69,6 @@ myApp.app.get ('/stringTest/locations/', function (req, res) {
 });
 
 // Example custom callback - variant parsing uri param and passing to query
-//myApp.setTemplate ('jessica', {title: 'XYZTestCallback'})
 myApp.app.get ('/qinterpolationTest/location/:locID/', function (req, res) {
 	var id = req.params.locID;
 	db.query ('SELECT * FROM location WHERE id=$1::int', [id], function (output) {
@@ -88,16 +78,11 @@ myApp.app.get ('/qinterpolationTest/location/:locID/', function (req, res) {
 });
 
 // Example custom callback - variant writing to the database
-myApp.app.get ('/insertTest/location/:newLocationEntry/', function (req, res) {
-	var entry = req.params.newLocationEntry;
-	db.query ('INSERT INTO location(name) values($1::text)', [entry], function (output) {
-		res.end ("Successfully added " + entry + " to locations.");
-	});
-});
+myApp.get ('/insertTest/location/:newLocationEntry/', 'INSERT INTO location(name) values($1::text)', true);
 
 // ?broken? - Example delete all from table
 //myApp.setTemplate ('jessica', { title: 'Palm Oil Locations' });
-myApp.get ('/location/wipe', 'DELETE * FROM location');
+myApp.get ('/location/wipe', 'DELETE * FROM location', false);
 
 myApp.listen (8080);
 
