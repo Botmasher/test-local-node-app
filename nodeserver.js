@@ -41,10 +41,17 @@ myApp.get ('/locationTest1/:name', {
 }, 'SELECT * FROM location WHERE name=$1::text', true);
 
 // same as above but pass in object to replace specific query vars
-myApp.get ('/locationTest1/:name', {
+myApp.get ('/locationTest2/:name', {
 	body: 'body-list',
 	title: 'Another List of Palm Oil Locations'
 }, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
+
+// as above but test using query statement builder
+var q = db.select('location');
+myApp.get ('/locationTest3/:name', {
+	body: 'body-list',
+	title: 'Another List of Palm Oil Locations'
+}, q, { 0:'San Fracaso' } );
 
 // same as above but pass in integer list to reorder query params
 myApp.get ('/location/:entryName/:index/', [1,0], 'SELECT * FROM location WHERE name=$1::text AND index=$2::int', true)

@@ -28,5 +28,23 @@ PgClient.prototype.query = function (query, qStrArgs, callback) {
 	});
 }
 
+PgClient.prototype.select = function (tableName, colName) {
+	// select all if only table but not columns defined
+	if (colName === undefined) colName = '*';
+
+	// iterate through list of columns and turn into string
+	//if (colName instanceof Array) {
+	if (Object.prototype.toString.call(colName) == '[object Array]') {
+		var columns = '';
+		for (i in colName) {
+			columns = columns + colName[i] + ', ';
+		}
+		columns = columns.slice(0,-1);
+	}
+	var q = 'FROM '+tableName+' SELECT '+colName;
+
+	return q;
+}
+
 // node require exports
 module.exports.PgClient = PgClient;
