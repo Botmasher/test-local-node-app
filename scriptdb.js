@@ -1,4 +1,7 @@
 var PgClient = function () {
+	// store the current query to run
+	this.statement = '';
+
 	// postgres db connection
 	var pg = require('pg');
 	var connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/orangutan';
@@ -6,6 +9,7 @@ var PgClient = function () {
 	this.db = new pg.Client(connectionString);
 	this.db.connect();
 }
+
 // abstract out db query and callback for rendering pages
 PgClient.prototype.query = function (query, qStrArgs, callback) {
 	/*
@@ -41,9 +45,26 @@ PgClient.prototype.select = function (tableName, colName) {
 		}
 		columns = columns.slice(0,-1);
 	}
+
 	var q = 'FROM '+tableName+' SELECT '+colName;
 
-	return q;
+	this.statement = q;		// store as current statement
+
+	return this; 			// to allow method chaining
+}
+
+PgClient.prototype.where = function (properties) {
+	if (properties === undefined || typeof properties != 'object') {
+		throw 'Db prototype\'s .where() expects k:v object as first parameter.';
+	}
+	// build WHERE clause in query with AND operator between conditions
+	var q = ' WHERE ';
+	for (p in properties) {
+		q = q + p + '=' + properties[p] + ' AND ';
+	}
+	q = q.slice(0,-5); 		// cut off final ' AND '
+	this.statement = q; 	// store as current query statement
+	return this; 			// for method chaining
 }
 
 // node require exports

@@ -47,7 +47,7 @@ myApp.get ('/locationTest2/:name', {
 }, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
 
 // as above but test using query statement builder
-var q = db.select('location');
+var q = db.select('location').where({'name':'Kyoto'});
 myApp.get ('/locationTest3/:name', {
 	body: 'body-list',
 	title: 'Another List of Palm Oil Locations'
