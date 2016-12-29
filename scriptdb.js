@@ -53,18 +53,24 @@ PgClient.prototype.select = function (tableName, colName) {
 	return this; 			// to allow method chaining
 }
 
-PgClient.prototype.where = function (properties) {
+PgClient.prototype.where = function (properties, useOrOperator) {
+	// chose how to concatenate multiple conditions
+	if (useOrOperator !== undefined && useOrOperator) {
+		var op = ' OR ';
+	} else {
+		var op = ' AND ';
+	}
 	if (properties === undefined || typeof properties != 'object') {
 		throw 'Db prototype\'s .where() expects k:v object as first parameter.';
 	}
 	// build WHERE clause in query with AND operator between conditions
 	var q = ' WHERE ';
 	for (p in properties) {
-		q = q + p + '=' + properties[p] + ' AND ';
+		q = q + p + '="' + properties[p] + '"' + op;
 	}
-	q = q.slice(0,-5); 		// cut off final ' AND '
-	this.statement = q; 	// store as current query statement
-	return this; 			// for method chaining
+	q = q.slice(0,-op.length); 	// cut off final ' AND ' / ' OR '
+	this.statement = q; 		// store as current query statement
+	return this; 				// for method chaining
 }
 
 // node require exports
