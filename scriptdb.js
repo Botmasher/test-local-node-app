@@ -66,7 +66,12 @@ PgClient.prototype.where = function (properties, useOrOperator) {
 	// build WHERE clause in query with AND operator between conditions
 	var q = ' WHERE ';
 	for (p in properties) {
-		q = q + p + '="' + properties[p] + '"' + op;
+		if (Object.prototype.toString.call(properties[p]) == '[object Array]') {
+			var a = properties[p].join(" OR ");
+			q = q + p + '=(' + a + ')' + op; 
+		} else {
+			q = q + p + '=' + properties[p] + op;
+		}
 	}
 	q = q.slice(0,-op.length); 	// cut off final ' AND ' / ' OR '
 	this.statement = q; 		// store as current query statement

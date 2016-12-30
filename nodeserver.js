@@ -47,11 +47,11 @@ myApp.get ('/locationTest2/:name', {
 }, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
 
 // as above but test using query statement builder
-var q = db.select('location').where({'name':'$1::text','name':'Kyoto','name':'Tokyo'},1);
+var q = db.select('location').where({'id':2,'name':['Kyoto','Tokyo']}, 1);
 myApp.get ('/locationTest3/:name', {
 	body: 'body-list',
 	title: 'Another List of Palm Oil Locations'
-}, q, { 0:'San Fracaso' } );
+}, q, { 1:'San Fracaso' } );
 
 // same as above but pass in integer list to reorder query params
 myApp.get ('/location/:entryName/:index/', [1,0], 'SELECT * FROM location WHERE name=$1::text AND index=$2::int', true)
