@@ -46,34 +46,42 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 		res.setHeader ('Content-Type', 'text/html');
 		// if query string args are not present set them to empty
 		if (queryArgs === undefined) queryArgs = [];
-		if (queryArgs == true) queryArgs = req.params;
+		
+		// build array of request params
+		var reqParams = [];
+		for (p in req.params) {
+			reqParams.push (req.params[p]);
+		}
+
+		// if args are true, just use request params
+		if (queryArgs) queryArgs = reqParams;
 
 		// use integers to reorder query params
-		if (typeof queryArgs[0] === 'number') {
-			var newArgsList = req.params;
-			for (var i = 0; i < newArgsList.length; i++) {
-				newArgsList[i] = req.params[newArgsList[i]];
-			}
-			queryArgs = newArgsList;
-		}
+		// if (typeof queryArgs[0] === 'number') {
+		// 	var newArgsList = req.params;
+		// 	for (var i = 0; i < newArgsList.length; i++) {
+		// 		newArgsList[i] = req.params[newArgsList[i]];
+		// 	}
+		// 	queryArgs = newArgsList;
+		// }
 
 		// use an object to replace just specific param args
 		// e.g. given { 0: 'location', 1: 'Hilo' }
 		// "'loc', 'city', 'state'" => "'location', 'Hilo', 'state'"
 		// or do not use a specific query arg if index : null
-		if (typeof queryArgs === 'object') {
-			var newArgsList = req.params;
-			// include custom parameters in final query args
-			for (var i = req.params.length-1; i >= 0; i--) {
-				if  (queryArgs[i] !== undefined) {
-					newArgsList.push (queryArgs[i]);
-				} else if (queryArgs[i] != null) {
-					newArgsList.push (req.params[i]);
-				}
-				// if queryArgs value is null, don't use the param
-			}
-			queryArgs = newArgsList;
-		};
+		// if (typeof queryArgs === 'object') {
+		// 	var newArgsList = reqParams;
+		// 	// include custom parameters in final query args
+		// 	for (var i = reqParams.length-1; i >= 0; i--) {
+		// 		if  (queryArgs[i] !== undefined) {
+		// 			newArgsList.push (queryArgs[i]);
+		// 		} else if (queryArgs[i] != null) {
+		// 			newArgsList.push (reqParams[i]);
+		// 		}
+		// 		// if queryArgs value is null, don't use the param
+		// 	}
+		// 	queryArgs = newArgsList;
+		// };
 
 		if (query !== undefined) {
 			// my method for querying - pass callback to render once query is done
@@ -82,6 +90,7 @@ App.prototype.get = function (route, templateVars, query, queryArgs) {
 				templateVars.data = output.rows;
 			});
 		}
+
 		// render page once db query is done and output parsed
 		res.render (mainTemplate, templateVars);
 	});	
