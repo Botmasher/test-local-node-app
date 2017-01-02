@@ -28,17 +28,19 @@ myApp.app.get ('/', function (req, res) {
 // Example get and render page using our scriptapp .get method
 //  - the method checks for undefined query and query string args
 // 	- this version calls it for a simple render 
-myApp.get ('/jessica/', {
+myApp.templateVars = {
 	body: 'jessica',
 	title: 'My List of Palm Oil Locations'
-});
+};
+myApp.get ('/jessica/');
 
 // Example get/query/render using our own scriptapp .get method
 // 	- "data" key added to templateVars because passed in a query
-myApp.get ('/locationTest1/:name', {
+myApp.templateVars = {
 	body: 'body-list',
 	title: 'Another List of Palm Oil Locations'
-}, 'SELECT * FROM location WHERE name=$1::text', true);
+};
+myApp.get ('/locationTest1/:name', 'SELECT * FROM location WHERE name=$1::text', true);
 
 // same as above but pass in object to replace specific query vars
 myApp.get ('/locationTest2/:name', {
