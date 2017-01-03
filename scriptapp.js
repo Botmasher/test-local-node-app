@@ -77,24 +77,25 @@ App.prototype.get = function (route, query, queryArgs) {
 		// e.g. given { 0: 'location', 1: 'Hilo' }
 		// "'loc', 'city', 'state'" => "'location', 'Hilo', 'state'"
 		// or do not use a specific query arg if index : null
-		// if (typeof queryArgs === 'object') {
-		// 	var newArgsList = reqParams;
-		// 	// include custom parameters in final query args
-		// 	for (var i = reqParams.length-1; i >= 0; i--) {
-		// 		if  (queryArgs[i] !== undefined) {
-		// 			newArgsList.push (queryArgs[i]);
-		// 		} else if (queryArgs[i] != null) {
-		// 			newArgsList.push (reqParams[i]);
-		// 		}
-		// 		// if queryArgs value is null, don't use the param
-		// 	}
-		// 	queryArgs = newArgsList;
-		// };
+		if (typeof queryArgs === 'object') {
+			var newArgsList = reqParams;
+			// include custom parameters in final query args
+			for (var i = reqParams.length-1; i >= 0; i--) {
+				if  (queryArgs[i] !== undefined) {
+					newArgsList.push (queryArgs[i]);
+				} else if (queryArgs[i] != null) {
+					newArgsList.push (reqParams[i]);
+				}
+				// if queryArgs value is null, don't use the param
+			}
+			queryArgs = newArgsList;
+		};
 
 		// my method for querying - pass callback to render once query is done
 		client.query (query, queryArgs, function (output) {
 			// add data to template variables
-			templateVars.data = output.rows;
+			templateVars.data = null;
+			if (output.rows.length != 0) templateVars.data = output.rows;
 		});
 
 		// render page once db query is done and output parsed
