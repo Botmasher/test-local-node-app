@@ -2,10 +2,14 @@
 	
 	<p>Places where palm oil is currently being served:</p>
 
-	<ul>
+	<table class = "table table-hover">
 	<% for (i in data) { %>
-		<li><%=	data[i] %></li>
+		<tr>
+			<td>#<%= i %></td>
+			<td><%=	data[i] %></td>
+			<td>description</td>
+		</tr>
 	<% }%>
-	</ul>
+	</table>
 	
 </body>
