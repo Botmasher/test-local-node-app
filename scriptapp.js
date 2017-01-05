@@ -62,7 +62,7 @@ App.prototype.get = function (route, query, queryArgs) {
 		if (queryArgs === undefined) queryArgs = [];
 		
 		// if args are true, just use request params
-		if (queryArgs) queryArgs = reqParams;
+		if (queryArgs == true) queryArgs = reqParams;
 
 		// use integers to reorder query params
 		// if (typeof queryArgs[0] === 'number') {
@@ -77,19 +77,19 @@ App.prototype.get = function (route, query, queryArgs) {
 		// e.g. given { 0: 'location', 1: 'Hilo' }
 		// "'loc', 'city', 'state'" => "'location', 'Hilo', 'state'"
 		// or do not use a specific query arg if index : null
-		if (typeof queryArgs === 'object') {
-			var newArgsList = reqParams;
-			// include custom parameters in final query args
-			for (var i = reqParams.length-1; i >= 0; i--) {
-				if  (queryArgs[i] !== undefined) {
-					newArgsList.push (queryArgs[i]);
-				} else if (queryArgs[i] != null) {
-					newArgsList.push (reqParams[i]);
-				}
-				// if queryArgs value is null, don't use the param
-			}
-			queryArgs = newArgsList;
-		};
+		// if (typeof queryArgs === 'object') {
+		// 	var newArgsList = reqParams;
+		// 	// include custom parameters in final query args
+		// 	for (var i = reqParams.length-1; i >= 0; i--) {
+		// 		if  (queryArgs[i] !== undefined) {
+		// 			newArgsList.push (queryArgs[i]);
+		// 		} else if (queryArgs[i] != null) {
+		// 			newArgsList.push (reqParams[i]);
+		// 		}
+		// 		// if queryArgs value is null, don't use the param
+		// 	}
+		// 	queryArgs = newArgsList;
+		// };
 
 		// my method for querying - pass callback to render once query is done
 		client.query (query, queryArgs, function (output) {

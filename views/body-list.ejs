@@ -5,8 +5,8 @@
 	<table class = "table table-hover">
 	<% for (i in data) { %>
 		<tr>
-			<td>#<%= i %></td>
-			<td><%=	data[i] %></td>
+			<td>#<%= data[i].id %></td>
+			<td><%=	data[i].name %></td>
 			<td>description</td>
 		</tr>
 	<% }%>
