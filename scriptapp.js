@@ -35,16 +35,11 @@ App.prototype.get = function (route, query, queryArgs) {
 	 * 	  - takes query and string interp args expected by pg query
 	 * 	  - set queryArgs=true to use URI params to fill query args
 	 */
-	
-	// store db and main template for querying and building template
-	var mainTemplate = this.mainTemplate;
-	var templateVars = this.templateVars;
-	var client = this.db;
 
 	//if (route === undefined) throw "ERROR: route missing when calling App.get";
 
 	// express app get method
-	this.app.get (route, function (req, res) {
+	this.app.get.call (this, route, function (req, res) {
 		res.setHeader ('Content-Type', 'text/html');
 		
 		// build array of request params
@@ -54,7 +49,7 @@ App.prototype.get = function (route, query, queryArgs) {
 		}
 
 		if (query === undefined) {
-			res.render (mainTemplate, templateVars);
+			this.render (res);
 			return;
 		}
 
@@ -92,15 +87,19 @@ App.prototype.get = function (route, query, queryArgs) {
 		// };
 
 		// my method for querying - pass callback to render once query is done
-		client.query (query, queryArgs, function (output) {
+		this.db.query (query, queryArgs, function (output) {
 			// add data to template variables
-			templateVars.data = null;
-			if (output.rows.length != 0) templateVars.data = output.rows;
+			this.templateVars.data = null;
+			if (output.rows.length != 0) this.templateVars.data = output.rows;
 		});
 
 		// render page once db query is done and output parsed
-		res.render (mainTemplate, templateVars);
+		this.render (res);
 	});	
+}
+
+App.prototype.render = function (res) {
+	res.render (this.mainTemplate, this.templateVars);
 }
 
 App.prototype.getWithParams = function (route, templateVars, query) {
