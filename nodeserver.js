@@ -8,6 +8,8 @@ var myApp = new expressWrap.App();
 myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
+// build content loader prototype to bring in html body partials
+var ContentLoader = function () {};
 
 // set scaffolding template that we'll pass different "body" keys
 myApp.setMainTemplate ('main');
@@ -17,7 +19,8 @@ myApp.setMainTemplate ('main');
 // - add "data" key on query end
 myApp.app.get ('/', function (req, res) {
 	myApp.templateVars = {
-		body: 'default'
+		body: 'default',
+		content: '<p>Test content to insert into body!</p>'
 	};
 	db.query ('SELECT * FROM location', [], function (o) {
 		myApp.templateVars.data = o.rows;
@@ -46,7 +49,7 @@ myApp.get ('/locationTest1/:name', 'SELECT * FROM location');
 myApp.get ('/locationTest2/:name', {
 	body: 'body-list',
 	title: 'Another List of Palm Oil Locations'
-}, 'SELECT * FROM location WHERE name=:$1::text', {0:'San Fracaso'} );
+}, 'SELECT * FROM location WHERE name=$1::text', {0:'San Fracaso'} );
 
 // as above but test using query statement builder
 var q = db.select('location').where({'id':2,'name':['Kyoto','Tokyo']}, 1);

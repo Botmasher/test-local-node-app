@@ -9,15 +9,19 @@
 
 <% // include body view %>
 <% if (body == "default") { %>
-	<p>Default body text.</p>
-	<p>Body tags in header.ejs (open) & footer.ejs (close).</p>
-	<p>The structure of our basic main .ejs template:</p>
-	<ol>
-		<li>header</li>
-		<li>logo</li>
-		<li>body</li>
-		<li>footer</li>
-	</ol>
+	<% if (content !== undefined) { %>
+		<%- content %>
+	<% } else { %> 
+		<p>Default body text.</p>
+		<p>Body tags in header.ejs (open) & footer.ejs (close).</p>
+		<p>The structure of our basic main .ejs template:</p>
+		<ol>
+			<li>header</li>
+			<li>logo</li>
+			<li>body</li>
+			<li>footer</li>
+		</ol>
+	<% } %>
 <% } else if (body == "body-list") { %>
 	<%- include body-list %>
 <% } else if (body == "jessica") { %>
