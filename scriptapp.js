@@ -28,6 +28,23 @@ App.prototype.setMainTemplate = function (template) {
 	this.mainTemplate = template;
 }
 
+App.prototype.setTemplateVars = function (obj) {
+	// replace the template variables object
+	this.templateVars = obj;
+}
+
+App.prototype.addTemplateVar = function (k, v) {
+	// add an item to the template variables object
+	this.templateVars[k] = v;
+}
+
+App.prototype.addTemplateVars = function (obj) {
+	// add multiple items to the template variables object
+	for (key in obj) {
+		this.templateVars[key] = varsObj[key];
+	}
+}
+
 App.prototype.get = function (route, query, queryArgs) {
 	/*
 	 * 	Define endpoint, query to run and template to render
@@ -87,19 +104,19 @@ App.prototype.get = function (route, query, queryArgs) {
 		// };
 
 		// my method for querying - pass callback to render once query is done
-		this.db.query (query, queryArgs, function (output) {
+		this.db.query.call (this, query, queryArgs, function (output) {
 			// add data to template variables
 			this.templateVars.data = null;
 			if (output.rows.length != 0) this.templateVars.data = output.rows;
 		});
 
 		// render page once db query is done and output parsed
-		this.render (res);
+		this.render (result);
 	});	
 }
 
-App.prototype.render = function (res) {
-	res.render (this.mainTemplate, this.templateVars);
+App.prototype.render = function (result) {
+	result.render (this.mainTemplate, this.templateVars);
 }
 
 App.prototype.getWithParams = function (route, templateVars, query) {
