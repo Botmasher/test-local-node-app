@@ -9,7 +9,33 @@ myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
 // build content loader prototype to bring in html body partials
-var ContentLoader = function () {};
+var ContentFormatter = function () {
+	this.content = '';
+	// by default expects html body content
+	this.inBody = true;
+};
+ContentFormatter.prototype.addContent = function (content) {
+	this.content = this.content + content;
+}
+ContentFormatter.prototype.setContent = function (content) {
+	this.content = content;
+}
+ContentFormatter.prototype.makeList = function (a, ordered, lID, lClass) {
+	// build a basic unordered or ordered list
+	var listType = 'ul'
+	var listClass = '';
+	var listID = '';
+	if (ordered !== undefined && ordered) listType = 'ol';
+	if (lClass !== undefined) listClass = ' class = "'+lClass+'"';
+	if (lID !== undefined) listID = ' id = "'+lID+'"';
+	var output = '<'+listType+'>\n';
+	for (i in a) {
+		output = output + '<li>' + a[i] + '</li>'; 
+	}
+	var output = output + '</'+listType'>\n';
+	this.addContent (output);
+}
+
 
 // set scaffolding template that we'll pass different "body" keys
 myApp.setMainTemplate ('main');
