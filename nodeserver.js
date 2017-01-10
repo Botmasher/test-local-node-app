@@ -8,7 +8,8 @@ var myApp = new expressWrap.App();
 myApp.setViews('./views', 'ejs');
 myApp.setDatabase(db);
 
-// build content loader prototype to bring in html body partials
+
+// build content formatter prototype
 var ContentFormatter = function () {
 	this.content = '';
 	// by default expects html body content
@@ -19,6 +20,9 @@ ContentFormatter.prototype.addContent = function (content) {
 }
 ContentFormatter.prototype.setContent = function (content) {
 	this.content = content;
+}
+ContentFormatter.prototype.removeContent = function (subcontent) {
+	this.content = this.content.replace (subcontent, '');
 }
 ContentFormatter.prototype.makeList = function (a, ordered, lID, lClass) {
 	// build a basic unordered or ordered list
@@ -34,6 +38,25 @@ ContentFormatter.prototype.makeList = function (a, ordered, lID, lClass) {
 	}
 	var output = output + '</'+listType'>\n';
 	this.addContent (output);
+}
+ContentFormatter.prototype.makeProse = function (txt) {
+	// build basic paragraphs allowing for h1-h4 headers
+	var o = '';
+	var a = [];
+	var counter = 0;
+	for (i in txt) {
+		if (a[counter]=== undefined) a[counter] = '';
+		if (txt[i] != '\n') a[counter] = a[counter] + txt[i];
+		if (txt[i] == '\n') counter = counter + 1;
+	}
+	for (l in a) {
+		if (a[l][0:3] in ['h1: ','h2: ','h3: ','h4: ']) {
+			o = o+'<'+a[l][0:1]+'>'+a[l][4:]+'</'+a[l][0:1]+'>';
+		} else {
+			o = o+'<p>'+a[l]+'</p>';
+		}	
+	}
+	this.addContent (o); 
 }
 
 
