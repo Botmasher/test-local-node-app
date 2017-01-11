@@ -10,21 +10,29 @@ myApp.setDatabase(db);
 
 
 // build content formatter prototype
-var ContentFormatter = function () {
-	this.content = '';
+var ContentMaker = function (starterContent) {
+	if (starterContent === undefined) {
+		this.content = '';
+	} else {
+		this.content = starterContent;
+	}
 	// by default expects html body content
 	this.inBody = true;
 };
-ContentFormatter.prototype.addContent = function (content) {
+ContentMaker.prototype.appendContent = function (content) {
 	this.content = this.content + content;
 }
-ContentFormatter.prototype.setContent = function (content) {
+ContentMaker.prototype.prependContent = function (content) {
+	this.content = content + this.content;
+}
+// - add method to insert content
+ContentMaker.prototype.setContent = function (content) {
 	this.content = content;
 }
-ContentFormatter.prototype.removeContent = function (subcontent) {
+ContentMaker.prototype.removeContent = function (subcontent) {
 	this.content = this.content.replace (subcontent, '');
 }
-ContentFormatter.prototype.makeList = function (a, ordered, lID, lClass) {
+ContentMaker.prototype.makeList = function (a, ordered, lID, lClass) {
 	// build a basic unordered or ordered list
 	var listType = 'ul'
 	var listClass = '';
@@ -39,7 +47,11 @@ ContentFormatter.prototype.makeList = function (a, ordered, lID, lClass) {
 	var output = output + '</'+listType'>\n';
 	this.addContent (output);
 }
-ContentFormatter.prototype.makeProse = function (txt) {
+ContentMaker.prototype.makeImgGrid = function (a) {
+	// take an array of images and format them
+	// in div or section as grid using our or BtStrp styles
+}
+ContentMaker.prototype.makeProse = function (txt) {
 	// build basic paragraphs allowing for h1-h4 headers
 	var o = '';
 	var a = [];
@@ -58,7 +70,8 @@ ContentFormatter.prototype.makeProse = function (txt) {
 	}
 	this.addContent (o); 
 }
-
+var myContent = new ContentMaker();
+// - make myContent accessible outside the scope of this file
 
 // set scaffolding template that we'll pass different "body" keys
 myApp.setMainTemplate ('main');
