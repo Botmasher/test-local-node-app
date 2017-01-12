@@ -25,7 +25,14 @@ ContentMaker.prototype.appendContent = function (content) {
 ContentMaker.prototype.prependContent = function (content) {
 	this.content = content + this.content;
 }
-// - add method to insert content
+ContentMaker.prototype.insertContent = function (content, loc) {
+	if (loc type is int) {
+		this.content = this.content[0:loc] + content + this.content[loc:];
+	} else {
+		locIndex = this.content.indexOf (loc);
+		this.content = this.content[0:locIndex] + content + this.content[locIndex:];
+	}
+}
 ContentMaker.prototype.setContent = function (content) {
 	this.content = content;
 }
@@ -48,8 +55,12 @@ ContentMaker.prototype.makeList = function (a, ordered, lID, lClass) {
 	this.addContent (output);
 }
 ContentMaker.prototype.makeImgGrid = function (a) {
-	// take an array of images and format them
-	// in div or section as grid using our or BtStrp styles
+	var o = '';
+	// take an array of sources and format them as img
+	for (i in a) {
+		o = o + '<img src = "' + a[i] + '">';
+	}
+	// in div or section as grid using our or BtStrp styles?
 }
 ContentMaker.prototype.makeProse = function (txt) {
 	// build basic paragraphs allowing for h1-h4 headers
