@@ -54,14 +54,31 @@ ContentMaker.prototype.makeList = function (a, ordered, lID, lClass) {
 	var output = output + '</'+listType'>\n';
 	this.addContent (output);
 }
-ContentMaker.prototype.makeImgGrid = function (a) {
+ContentMaker.prototype.makeImgGrid = function (a, colCount) {
+	if (typeof colCount === 'number') colCount = colCount.toString();
 	var o = '';
 	// take an array of sources and format them as img
 	for (i in a) {
 		o = o + '<img src = "' + a[i] + '">';
 	}
 	// in div or section as grid using our or BtStrp styles?
+	var newChunk = '<section>'+o+'</section>';
+	newChunk = this.addTagAttribs('class', 'col-md-'+colCount);
+	return newChunk;
 }
+ContentMaker.prototype.addTagAttribs = function (attr, val) {
+	// given text starting with an html tag of type <name>
+	// check that tag start is formatted like '<name' not '< name'
+	if (tag[1] == ' ') {
+		tag = tag.replace (' ', '');
+	}
+	// use space to check for end of tag name
+	var i = tag.indexOf (' ');
+	var newTag = '';
+	newTag = tag[0:i+1] + attr + '="' + val + '"' + tag[i:];
+	return newTag;
+}
+// add one to create tag and add it to beginning and end of a chunk
 ContentMaker.prototype.makeProse = function (txt) {
 	// build basic paragraphs allowing for h1-h4 headers
 	var o = '';
