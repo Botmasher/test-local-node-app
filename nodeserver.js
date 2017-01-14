@@ -66,19 +66,34 @@ ContentMaker.prototype.makeImgGrid = function (a, colCount) {
 	newChunk = this.addTagAttribs('class', 'col-md-'+colCount);
 	return newChunk;
 }
-ContentMaker.prototype.addTagAttribs = function (attr, val) {
+ContentMaker.prototype.addTagAttribs = function (content, attr, val, tag) {
 	// given text starting with an html tag of type <name>
 	// check that tag start is formatted like '<name' not '< name'
-	if (tag[1] == ' ') {
-		tag = tag.replace (' ', '');
+	if (content[1] == ' ') {
+		content = content.replace (' ', '');
 	}
-	// use space to check for end of tag name
-	var i = tag.indexOf (' ');
-	var newTag = '';
-	newTag = tag[0:i+1] + attr + '="' + val + '"' + tag[i:];
-	return newTag;
+
+	var i;
+	if (tag !== undefined) {
+		// tag is defined - find this tag in the content
+		i = content.indexOf ('<'+tag)
+	} else {
+		// tag is at start - use space or > to check for end of tag name
+		i = content.indexOf(' ') < content.indexOf('>') ? content.indexOf(' ') : content.indexOf('>');
+	}
+	var tagged = '';
+	tagged = content[0:i+1] + attr + '="' + val + '"' + content[i:];
+	return tagged;
 }
 // add one to create tag and add it to beginning and end of a chunk
+ContentMaker.prototype.addTag = function (content, tag) {
+	// recognized tag types
+	var tags = ['section', 'div', 'p', 'h1', 'h2', 'h3', 'h4', 'span', 'strong', 'em'];
+	// do not add a tag if the tag is not of a recognized type
+	if (tags.indexOf(tag) === -1) return content;
+	content = '<'+tag+'>'+content+'</'+tag+'>';
+	return content;
+}
 ContentMaker.prototype.makeProse = function (txt) {
 	// build basic paragraphs allowing for h1-h4 headers
 	var o = '';
