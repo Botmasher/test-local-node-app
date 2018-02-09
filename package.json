@@ -4,7 +4,7 @@
   "description": "A test application for doing stuff real good",
   "main": "nodeserver.js",
   "dependencies": {
-    "ejs": "2.5.2",
+    "ejs": "2.5.5",
     "express": "4.14.0",
     "pg": "6.1.0"
   },
