@@ -5,7 +5,7 @@
   "main": "nodeserver.js",
   "dependencies": {
     "ejs": "2.5.5",
-    "express": "4.14.0",
+    "express": "^4.16.3",
     "pg": "6.1.0"
   },
   "devDependencies": {},
